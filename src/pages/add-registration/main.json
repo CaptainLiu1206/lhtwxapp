@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "报名信息",
+  "usingComponents": {
+    "van-cell-group": "../../../static/vant/cell-group/index",
+    "van-field": "../../../static/vant/field/index",
+    "i-input": "../../../static/iview/input/index"
+  }
+}

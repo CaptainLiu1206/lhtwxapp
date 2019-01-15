@@ -1,0 +1,14 @@
+<view class="my-class active-card item">
+  <view class="item-left">
+    <image class="thumb" :src="item.thumb" alt="" />
+  </view>
+  <view class="item-right">
+    <view class="title ellipsis">{{item.title}}</view>
+    <view class="price-sign">
+      <label class="price">{{item.price}}</label>
+      <van-button wx-if="{{btnFlag}}" plain type="warning" size="small">{{item.price > 0 ? '开始报名' : '免费报名'}}</van-button>
+    </view>
+    <view class="time ellipsis">{{item.time}}</view>
+    <view class="address ellipsis">{{item.address}}</view>
+  </view>
+</view>

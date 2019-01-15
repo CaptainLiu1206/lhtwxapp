@@ -1,0 +1,43 @@
+{
+  "pages": [
+    "pages/index/main",
+    "pages/activities/main",
+    "pages/schedule/main",
+    "pages/userInfoSet/main",
+    "pages/payment/main",
+    "pages/add-registration/main",
+    "pages/active-detail/main",
+    "pages/my-attentions/main",
+    "pages/my-activities/main",
+    "pages/my-favourites/main",
+    "pages/user/main"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#0184D6",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "list": [
+      {
+        "pagePath": "pages/index/main",
+        "text": "首页",
+        "iconPath": "./static/img/unselected1.png",
+        "selectedIconPath": "./static/img/selected1.png"
+      },
+      {
+        "pagePath": "pages/schedule/main",
+        "text": "日历",
+        "iconPath": "./static/img/unselected2.png",
+        "selectedIconPath": "./static/img/selected2.png"
+      },
+      {
+        "pagePath": "pages/user/main",
+        "text": "我的",
+        "iconPath": "./static/img/unselected3.png",
+        "selectedIconPath": "./static/img/selected3.png"
+      }
+    ]
+  }
+}
