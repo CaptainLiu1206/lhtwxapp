@@ -6,7 +6,8 @@ const state = {
     company: '',
     job: '',
     remark: ''
-  }
+  },
+  currentCity: '全国'
 }
 
 export default state

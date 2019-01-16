@@ -1,8 +1,9 @@
 const mutations = {
   setRegistration (state, payload) {
-    console.log(payload)
     state.registration = payload
-    console.log(state.registration)
+  },
+  setCurrentCity (state, city) {
+    state.currentCity = city
   }
 }
 

@@ -1,8 +1,9 @@
 {
   "pages": [
-    "pages/index/main",
-    "pages/activities/main",
     "pages/schedule/main",
+    "pages/activities/main",
+    "pages/search-city/main",
+    "pages/index/main",
     "pages/userInfoSet/main",
     "pages/payment/main",
     "pages/add-registration/main",
@@ -14,7 +15,7 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#0184D6",
+    "navigationBarBackgroundColor": "#3B99FB",
     "navigationBarTitleText": "WeChat",
     "navigationBarTextStyle": "white"
   },

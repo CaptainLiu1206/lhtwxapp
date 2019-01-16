@@ -6,8 +6,8 @@
     </div>
     <div class="item-right">
       <div class="title ellipsis">{{item.title}}</div>
-      <div class="price-sign" v-if="item.price !== 'undefined'">
-        <span class="price" v-if="item.price !== 'undefined'">￥{{item.price}}</span>
+      <div class="price-sign" v-if="item.price || item.price === '0' || item.price === 0">
+        <span class="price" v-if="item.price">￥{{item.price}}</span>
         <button class="sign-btn" hover-class="btn-hover" v-if="isButton">{{item.price > 0 ? '开始报名' : '免费报名'}}</button>
       </div>
       <div class="time ellipsis" v-if="item.time">{{item.time}}</div>
@@ -93,6 +93,7 @@ export default {
           font-size: 28rpx;
           line-height: 56rpx;
           float: left;
+          font-weight: bold;
         }
 
         .sign-btn {

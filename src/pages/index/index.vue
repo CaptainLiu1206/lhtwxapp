@@ -1,11 +1,11 @@
 <template>
   <div class="container index">
     <div class="head">
-      <div class="address">
+      <div class="address" @click="toSeachCity">
         <span class="icon-wrapper">
-          <van-icon name="location-o" />
+          <van-icon name="location" size="14px" />
         </span>
-        <span class="name">全国</span>
+        <span class="name">{{currentCity}}</span>
       </div>
       <div class="search-wrapper">
         <van-search placeholder="搜索精彩活动" v-model="value" />
@@ -22,12 +22,12 @@
     </div>
     <div class="categories">
       <div class="category" v-for="category in categories" :key="category.id">
-        <van-icon :name="category.icon" />
-        <p>{{category.title}}</p>
+        <van-icon class="icon" :name="category.icon" />
+        <p class="title">{{category.title}}</p>
       </div>
       <div class="category">
-        <van-icon name="more" />
-        <p>更多</p>
+        <van-icon class="icon" name="more-o" />
+        <p class="title">更多</p>
       </div>
     </div>
     <div class="activities">
@@ -49,6 +49,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   components: {},
   data () {
@@ -61,17 +63,17 @@ export default {
       categories: [
         {
           id: 1,
-          icon: 'gem',
+          icon: 'gem-o',
           title: '分类1'
         },
         {
           id: 2,
-          icon: 'gift',
+          icon: 'gift-o',
           title: '分类2'
         },
         {
           id: 3,
-          icon: 'shop',
+          icon: 'shop-o',
           title: '分类3'
         }
       ],
@@ -101,8 +103,14 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['currentCity'])
   },
   methods: {
+    toSeachCity () {
+      wx.navigateTo({
+        url: '../search-city/main'
+      })
+    }
   },
   created () {}
 }
@@ -110,31 +118,37 @@ export default {
 
 <style lang="scss">
 .index {
-  background-color: #f2f2f2;
+  background-color: #fff;
   .head {
     display: flex;
     overflow: hidden;
     .address {
-      width: 50px;
-      padding-left: 15px;
+      width: 70px;
+      padding-left: 10px;
       line-height: 44px;
       font-size: 0;
       overflow: hidden;
       height: 44px;
       .icon-wrapper {
-        font-size: 16px;
         float: left;
         vertical-align: middle;
-        margin-top: 2px;
+        margin: 6px 2px 0 0;
+        overflow: hidden;
       }
       >.name {
-        font-size: 16px;
+        font-size: 14px;
         display: inline-block;
         vertical-align: middle;
       }
     }
     .search-wrapper {
       flex: 1 0 0;
+      .van-search {
+        background-color: #fff !important;
+        .van-cell {
+          background-color: #f2f2f2;
+        }
+      }
     }
   }
   .swiper-wrapper {
@@ -147,19 +161,28 @@ export default {
   .categories {
     display: flex;
     padding: 0 15px;
+    margin: 60rpx 0;
     .category {
       flex: 1 0 0;
       text-align: center;
+      color: green;
+      .icon {
+        font-size: 24px;
+      }
+      .title {
+        font-size: 16px;
+      }
     }
   }
   .activities {
     padding: 0 15px;
     > .title {
+      position: relative;
+      padding-left: 20rpx;
+      margin-bottom: 40rpx;
       font-size: 32rpx;
       line-height: 32rpx;
       color: #333;
-      padding-left: 20rpx;
-      position: relative;
       &::before {
         position: absolute;
         content: '';
@@ -178,6 +201,7 @@ export default {
       .item {
         flex: 0 0 50%;
         box-sizing: border-box;
+        margin-bottom: 40rpx;
         &:nth-child(2n+1) {
           padding-right: 10rpx;
         }
@@ -193,6 +217,7 @@ export default {
             font-size: 16px;
             line-height: 20px;
             color: #333;
+            margin: 16rpx 0;
           }
           .label {
             display: flex;
@@ -207,6 +232,7 @@ export default {
               text-align: right;
               color: red;
               font-size: 12px;
+              font-weight: bold;
             }
           }
         }
