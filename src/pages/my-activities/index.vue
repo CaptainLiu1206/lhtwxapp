@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import ActiveCard from '../../components/active-card'
+import ActiveCard from 'components/active-card'
 
 export default {
   components: {

@@ -36,13 +36,18 @@
         <image :src="imgUrl" class="slide-image" />
       </swiper-item>
     </swiper>
+    <Authorization :isShow="!isAuthorization" />
   </div>
 </template>
 
 <script>
-// import { formatTime } from '@/utils/index'
+import { mapGetters } from 'vuex'
+import Authorization from 'components/Authorization'
+
 export default {
-  components: {},
+  components: {
+    Authorization
+  },
   data () {
     return {
       imgUrls: [
@@ -55,6 +60,9 @@ export default {
       interval: 5000,
       duration: 1000
     }
+  },
+  computed: {
+    ...mapGetters(['isAuthorization'])
   },
   methods: {
     toUserInfoSet () {

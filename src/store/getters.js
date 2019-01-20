@@ -4,6 +4,16 @@ const getters = {
   },
   currentCity (state) {
     return state.currentCity
+  },
+  isAuthorization (state) {
+    return state.user.isAuthorization
+  },
+  cityList (state) {
+    return state.cityList
+  },
+  categories (state) {
+    console.log(state.categories)
+    return state.categories
   }
 }
 

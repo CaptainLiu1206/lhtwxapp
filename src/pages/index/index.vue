@@ -13,17 +13,17 @@
     </div>
     <div class="banner-wrapper">
       <swiper>
-        <block v-for="(imgUrl, idx) in imgUrls" :key="idx">
+        <block v-for="(banner, idx) in banners" :key="idx">
           <swiper-item>
-            <image class="banner-img" :src="imgUrl" mode="widthFix" style="width: 100%;" />
+            <img class="banner-img" :src="banner.title" alt="">
           </swiper-item>
         </block>
       </swiper>
     </div>
     <div class="categories">
       <div class="category" v-for="category in categories" :key="category.id">
-        <van-icon class="icon" :name="category.icon" />
-        <p class="title">{{category.title}}</p>
+        <van-icon class="icon" name="gem-o" />
+        <p class="title">{{category.name}}</p>
       </div>
       <div class="category">
         <van-icon class="icon" name="more-o" />
@@ -34,85 +34,107 @@
       <div class="title">强力推荐</div>
       <div class="list">
         <div class="item" v-for="active in activities" :key="active.id">
-          <image :src="active.imgUrl" mode="widthFix" />
+          <image :src="active.imgUrl" />
           <div class="desc">
             <p class="title">{{active.title}}</p>
             <div class="label">
               <div class="date">{{active.startTime}}</div>
-              <div class="price">￥{{active.price}}</div>
+              <div class="price">￥<span class="num">{{active.price}}</span></div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <div class="activities">
+      <div class="title">最新活动</div>
+      <div class="list">
+        <div class="item" v-for="active in newest" :key="active.id">
+          <image :src="active.imgUrl" />
+          <div class="desc">
+            <p class="title">{{active.title}}</p>
+            <div class="label">
+              <div class="date">{{active.startTime}}</div>
+              <div class="price">￥<span class="num">{{active.price}}</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <Authorization :isShow="!isAuthorization" />
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
+import Authorization from 'components/Authorization'
+import { formatTime } from 'utils'
 
 export default {
-  components: {},
+  components: {
+    Authorization
+  },
   data () {
     return {
+      banners: [],
       imgUrls: [
         'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1548165717&di=f5067553402fa156140cc2b0931b4d6e&imgtype=jpg&er=1&src=http%3A%2F%2Fimg0.ph.126.net%2FyPuVuVngJMXkhhOHBmKsow%3D%3D%2F6597981261795990840.jpg',
         'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1548165717&di=f5067553402fa156140cc2b0931b4d6e&imgtype=jpg&er=1&src=http%3A%2F%2Fimg0.ph.126.net%2FyPuVuVngJMXkhhOHBmKsow%3D%3D%2F6597981261795990840.jpg',
         'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1548165717&di=f5067553402fa156140cc2b0931b4d6e&imgtype=jpg&er=1&src=http%3A%2F%2Fimg0.ph.126.net%2FyPuVuVngJMXkhhOHBmKsow%3D%3D%2F6597981261795990840.jpg'
       ],
       categories: [
-        {
-          id: 1,
-          icon: 'gem-o',
-          title: '分类1'
-        },
-        {
-          id: 2,
-          icon: 'gift-o',
-          title: '分类2'
-        },
-        {
-          id: 3,
-          icon: 'shop-o',
-          title: '分类3'
-        }
+        // {
+        //   id: 1,
+        //   icon: 'gem-o',
+        //   title: '分类1'
+        // }
       ],
       activities: [
-        {
-          id: 1,
-          imgUrl: 'http://edustor.zhaopin.com/courseimage/1538980970608社保税管750-420.jpg',
-          title: '2018年全球金融衍产品大会颁奖盛典',
-          startTime: '2018-12-31',
-          price: '188'
-        },
-        {
-          id: 2,
-          imgUrl: 'http://edustor.zhaopin.com/courseimage/1538980970608社保税管750-420.jpg',
-          title: '2018年全球金融衍产品大会颁奖盛典',
-          startTime: '2018-12-31',
-          price: '188'
-        },
-        {
-          id: 3,
-          imgUrl: 'http://edustor.zhaopin.com/courseimage/1538980970608社保税管750-420.jpg',
-          title: '2018年全球金融衍产品大会颁奖盛典',
-          startTime: '2018-12-31',
-          price: '188'
-        }
-      ]
+        // {
+        //   id: 1,
+        //   imgUrl: 'http://edustor.zhaopin.com/courseimage/1538980970608社保税管750-420.jpg',
+        //   title: '2018年全球金融衍产品大会颁奖盛典',
+        //   startTime: '2018-12-31',
+        //   price: '188'
+        // }
+      ],
+      newest: []
     }
   },
   computed: {
-    ...mapGetters(['currentCity'])
+    ...mapGetters(['currentCity', 'isAuthorization'])
   },
   methods: {
     toSeachCity () {
       wx.navigateTo({
         url: '../search-city/main'
       })
-    }
+    },
+    ...mapActions(['fetchIndexInfo'])
   },
-  created () {}
+  created () {
+    this.fetchIndexInfo().then(({newest, selected, classify, banner}) => {
+      this.newest = handleActivityList(newest)
+      this.activities = handleActivityList(selected)
+      this.categories = classify.splice(0, 7)
+      this.banners = banner
+    })
+  }
+}
+
+function handleActivityList (list) {
+  let _list = list.reduce((arr, item) => {
+    const { id, cost, headimg, startTime, title } = item
+    let { year, month, day } = formatTime(startTime)
+    arr.push({
+      id: id,
+      title,
+      price: cost,
+      imgUrl: headimg,
+      startTime: `${year}-${month}-${day}`
+    })
+    return arr
+  }, [])
+  return _list
 }
 </script>
 
@@ -151,31 +173,51 @@ export default {
       }
     }
   }
-  .swiper-wrapper {
+  .banner-wrapper {
+    height: 400rpx;
+    ._swiper {
+      height: 100%;
+      ._swiper-item {
+        height: 100%;
+      }
+    }
     .banner-img {
       display: block;
-      width: 100%;
-      height: 300rpx;
+      width: 100vw;
+      height: 400rpx;
     }
   }
+  
   .categories {
     display: flex;
     padding: 0 15px;
-    margin: 60rpx 0;
+    margin: 50rpx 0 30rpx;
+    flex-wrap: wrap;
     .category {
-      flex: 1 0 0;
+      flex: 0 0 25%;
+      overflow: hidden;
       text-align: center;
-      color: green;
+      margin-bottom: 20rpx;
       .icon {
+        color: #3B99FB;
         font-size: 24px;
       }
       .title {
         font-size: 16px;
+        color: #333333;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding: 0 10rpx;
       }
     }
   }
   .activities {
     padding: 0 15px;
+    margin-bottom: 40rpx;
+    &:last-child {
+      margin-bottom: 0;
+    }
     > .title {
       position: relative;
       padding-left: 20rpx;
@@ -190,7 +232,7 @@ export default {
         top: 0;
         bottom: 0;
         width: 8rpx;
-        background-color: blue;
+        background-color: #3B99FB;
       }
     }
     .list {
@@ -203,13 +245,14 @@ export default {
         box-sizing: border-box;
         margin-bottom: 40rpx;
         &:nth-child(2n+1) {
-          padding-right: 10rpx;
+          padding-right: 20rpx;
         }
         &:nth-child(2n) {
-          padding-left: 10rpx;
+          padding-left: 20rpx;
         }
         > image {
           width: 100%;
+          height: 244rpx;
           border-radius: 16rpx;
         }
         .desc {
@@ -221,6 +264,7 @@ export default {
           }
           .label {
             display: flex;
+            align-items: flex-end;
             .date {
               flex: 1 0 0;
               text-align: left;
@@ -233,6 +277,9 @@ export default {
               color: red;
               font-size: 12px;
               font-weight: bold;
+              .num {
+                font-size: 16px;
+              }
             }
           }
         }

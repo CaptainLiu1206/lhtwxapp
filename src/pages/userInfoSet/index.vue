@@ -80,7 +80,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '../../assets/scss/filed.scss';
+@import '~assets/scss/filed.scss';
 
 .user {
   width: 100vw;

@@ -29,14 +29,14 @@
         <div class="category">
           <div>
             <i-tabs :current='currentTab' @change="handleTabChange" :scroll="true">
-              <i-tab v-for="(category, idx) in categories" :key="idx" :title="category.title"></i-tab>
+              <i-tab v-for="(category, idx) in categories" :key="idx" :title="category.name"></i-tab>
             </i-tabs>
           </div>
         </div>
       </div>
     </div>
     <div class="activities-box">
-      <div class="title">活动推荐</div>
+      <div class="title">活动列表</div>
       <div class="list" v-if="list.length">
         <div @click="toSign(item.id)" v-for="(item, idx) in list" :key="idx">
           <active-card :isButton="isButton" :item="item"></active-card>
@@ -44,16 +44,19 @@
       </div>
       <i-load-more tip="暂无活动" :loading="false" v-else />
     </div>
+    <Authorization :isShow="!isAuthorization" />
   </div>
 </template>
 <script>
-import ActiveCard from '../../components/active-card'
-import { formatTime, getUperDay } from '../../utils/index'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
+import ActiveCard from 'components/active-card'
+import Authorization from 'components/Authorization'
+import { formatTime, getUperDay } from 'utils/index'
 
 export default {
   components: {
-    ActiveCard
+    ActiveCard,
+    Authorization
   },
   data () {
     return {
@@ -61,33 +64,16 @@ export default {
       isButton: true,
       date: '2018-08-16',
       day: '周三',
-      list: [
-        { id: 1, title: '遇见期待的自己-有书2018共读之夜', price: '199', time: '2018年12月16日 8:00 - 2018年12月18日 10:00', address: '北京东城区北京东城区北京东城区', thumb: 'http://edustor.zhaopin.com/courseimage/15366478011041534324032043思考力.jpg' },
-        { id: 2, title: '遇见期待的自己-有书2018共读之夜', price: '199', time: '2018年12月16日 8:00 - 2018年12月18日 10:00', address: '北京东城区北京东城区北京东城区', thumb: 'http://edustor.zhaopin.com/courseimage/15366478011041534324032043思考力.jpg' },
-        { id: 3, title: '遇见期待的自己-有书2018共读之夜', price: '199', time: '2018年12月16日 8:00 - 2018年12月18日 10:00', address: '北京东城区北京东城区北京东城区', thumb: 'http://edustor.zhaopin.com/courseimage/15366478011041534324032043思考力.jpg' },
-        { id: 4, title: '遇见期待的自己-有书2018共读之夜', price: '199', time: '2018年12月16日 8:00 - 2018年12月18日 10:00', address: '北京东城区北京东城区北京东城区', thumb: 'http://edustor.zhaopin.com/courseimage/15366478011041534324032043思考力.jpg' },
-        { id: 5, title: '遇见期待的自己-有书2018共读之夜', price: '199', time: '2018年12月16日 8:00 - 2018年12月18日 10:00', address: '北京东城区北京东城区北京东城区', thumb: 'http://edustor.zhaopin.com/courseimage/15366478011041534324032043思考力.jpg' },
-        { id: 6, title: '遇见期待的自己-有书2018共读之夜', price: '199', time: '2018年12月16日 8:00 - 2018年12月18日 10:00', address: '北京东城区北京东城区北京东城区', thumb: 'http://edustor.zhaopin.com/courseimage/15366478011041534324032043思考力.jpg' },
-        { id: 7, title: '遇见期待的自己-有书2018共读之夜', price: '199', time: '2018年12月16日 8:00 - 2018年12月18日 10:00', address: '北京东城区北京东城区北京东城区', thumb: 'http://edustor.zhaopin.com/courseimage/15366478011041534324032043思考力.jpg' },
-        { id: 8, title: '遇见期待的自己-有书2018共读之夜', price: '199', time: '2018年12月16日 8:00 - 2018年12月18日 10:00', address: '北京东城区北京东城区北京东城区', thumb: 'http://edustor.zhaopin.com/courseimage/15366478011041534324032043思考力.jpg' }
-      ],
-      categories: [
-        { id: 1, title: '分类1' },
-        { id: 2, title: '分类2' },
-        { id: 3, title: '分类3' },
-        { id: 4, title: '分类4' },
-        { id: 5, title: '分类5' },
-        { id: 6, title: '分类6' },
-        { id: 7, title: '分类7' },
-        { id: 8, title: '分类8' },
-        { id: 9, title: '分类9' },
-        { id: 10, title: '分类10' },
-        { id: 11, title: '分类11' }
-      ]
+      list: []
     }
   },
   computed: {
-    ...mapGetters(['currentCity'])
+    ...mapGetters(['currentCity', 'isAuthorization', 'categories'])
+  },
+  onShow () {
+    this.fetchActivities({title: '测试1'}).then(data => {
+      this.list = data
+    })
   },
   methods: {
     toSeachCity () {
@@ -116,15 +102,20 @@ export default {
       wx.navigateTo({
         url: `../active-detail/main?id=${id}`
       })
-    }
+    },
+    ...mapActions(['fetchActivities'])
   }
 }
 </script>
 <style lang="scss">
 .schedule {
+  .i-tabs-tab-scroll {
+    width: auto;
+    min-width: 60px;
+  }
   .header {
     overflow: hidden;
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     z-index: 111;
@@ -216,9 +207,9 @@ export default {
   .activities-box{
     position: absolute;
     top: 236rpx;
+    bottom: 0;
     left: 0;
     width: 100vw;
-    height: calc(100vh - 236px);
     > .title {
       font-size: 32rpx;
       line-height: 32rpx;
@@ -237,9 +228,19 @@ export default {
       }
     }
     .list {
+      position: absolute;
+      left: 0;
+      top: 32rpx;
+      bottom: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
       width: 100%;
       box-sizing: border-box;
       padding: 30rpx;
+      -webkit-overflow-scrolling: touch;
+      &::-webkit-scrollbar {
+        width: 0;
+      }
     }
   }
 }

@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import AttentionItem from '../../components/attention-item'
+import AttentionItem from 'components/attention-item'
 
 export default {
   components: {

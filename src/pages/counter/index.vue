@@ -40,7 +40,7 @@ export default {
   display: inline-block;
   margin: 100px auto;
   padding: 5px 10px;
-  color: blue;
-  border: 1px solid blue;
+  color: #3B99FB;
+  border: 1px solid #3B99FB;
 }
 </style>

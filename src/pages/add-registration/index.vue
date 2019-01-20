@@ -79,9 +79,10 @@ export default {
 </script>
 
 <style lang="scss">
-@import '../../assets/scss/filed.scss';
+@import '~assets/scss/filed.scss';
 
 .add-registration {
+  background-color: #fff;
   .form {
     padding-left: 30rpx;
   }

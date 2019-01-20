@@ -3,5 +3,5 @@ var prodEnv = require('./prod.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  baseURL: '"1232"'
+  baseURL: '"http://118.190.206.166:8082"'
 })

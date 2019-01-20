@@ -7,8 +7,10 @@
     <div class="item-right">
       <div class="title ellipsis">{{item.title}}</div>
       <div class="price-sign" v-if="item.price || item.price === '0' || item.price === 0">
-        <span class="price" v-if="item.price">￥{{item.price}}</span>
-        <button class="sign-btn" hover-class="btn-hover" v-if="isButton">{{item.price > 0 ? '开始报名' : '免费报名'}}</button>
+        <span class="price" v-if="item.price">￥<span class="num">{{item.price}}</span></span>
+        <div class="btn-wrapper">
+          <button class="sign-btn" hover-class="btn-hover" v-if="isButton">{{item.price > 0 ? '开始报名' : '免费报名'}}</button>
+        </div>
       </div>
       <div class="time ellipsis" v-if="item.time">{{item.time}}</div>
       <div class="address ellipsis" v-if="item.address">{{item.address}}</div>
@@ -88,35 +90,42 @@ export default {
         text-align: right;
         box-sizing: border-box;
         padding-right: 20rpx;
+        display: flex;
+        align-items: flex-end;
         .price {
+          flex: 1 0 0;
+          text-align: left;
           color: red;
-          font-size: 28rpx;
-          line-height: 56rpx;
-          float: left;
-          font-weight: bold;
-        }
-
-        .sign-btn {
-          display: inline-block;
-          line-height: 56rpx;
-          outline: none;
-          border-radius: 6rpx;
-          text-align: center;
-          font-size: 28rpx;
-          color:#ff976a;
-          border: 2rpx solid #ff976a;
-          background-color: #fff;
-          vertical-align:middle;
-          touch-action:manipulation;
-          white-space:nowrap;
-          user-select:none;
-          cursor:pointer;
-          &.btn-hover{
-            background-color: rgba(0, 0, 0, 0.1);
+          font-size: 22rpx;
+          .num {
+            font-size: 28rpx;
+            font-weight: 600;
           }
-          &::after {
-            box-shadow: none;
-            border: none;
+        }
+        .btn-wrapper {
+          flex: 1 0 0;
+          text-align: right;
+          .sign-btn {
+            line-height: 56rpx;
+            outline: none;
+            border-radius: 6rpx;
+            text-align: center;
+            font-size: 28rpx;
+            color:#ff976a;
+            border: 2rpx solid #ff976a;
+            background-color: #fff;
+            vertical-align:middle;
+            touch-action:manipulation;
+            white-space:nowrap;
+            user-select:none;
+            cursor:pointer;
+            &.btn-hover{
+              background-color: rgba(0, 0, 0, 0.1);
+            }
+            &::after {
+              box-shadow: none;
+              border: none;
+            }
           }
         }
       }

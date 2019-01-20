@@ -1,9 +1,9 @@
 {
   "pages": [
+    "pages/index/main",
     "pages/schedule/main",
     "pages/activities/main",
     "pages/search-city/main",
-    "pages/index/main",
     "pages/userInfoSet/main",
     "pages/payment/main",
     "pages/add-registration/main",

@@ -2,6 +2,8 @@ import Vue from 'vue'
 import App from './App'
 import store from './store'
 
+import './assets/scss/reset.scss'
+
 Vue.prototype.$store = store
 
 Vue.config.productionTip = false

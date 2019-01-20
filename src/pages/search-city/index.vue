@@ -10,7 +10,7 @@
     <div class="city-list section">
       <p class="title">城市列表</p>
       <div class="list">
-        <button hover-class="hover-class" class="city" v-for="city in citys" :key="city.id" @click="onSelectCity(city)">{{city.name}}</button>
+        <button hover-class="hover-class" class="city" v-for="city in cityList" :key="city.id" @click="onSelectCity(city)">{{city.name}}</button>
       </div>
     </div>
   </div>
@@ -23,18 +23,11 @@ export default {
   components: {},
   data () {
     return {
-      citys: [
-        { id: 1, name: '北京' },
-        { id: 2, name: '上海' },
-        { id: 3, name: '广州' },
-        { id: 4, name: '深圳' },
-        { id: 5, name: '珠海' },
-        { id: 6, name: '石家庄' }
-      ]
+      citys: []
     }
   },
   computed: {
-    ...mapGetters(['currentCity'])
+    ...mapGetters(['currentCity', 'cityList'])
   },
   methods: {
     onSelectCity (city) {
@@ -44,8 +37,6 @@ export default {
       })
     },
     ...mapMutations(['setCurrentCity'])
-  },
-  created () {
   }
 }
 </script>
