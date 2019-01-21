@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import ActiveCard from 'components/active-card'
 
 export default {
@@ -68,11 +69,6 @@ export default {
             { id: 404, title: '选项404选项404选项404选项404', thumb: 'https://ss0.baidu.com/73x1bjeh1BF3odCf/it/u=2911576090,1350833088&fm=85&s=34314E341F006D62427241400300B0F8', time: '2017-08-09', address: '北京' },
             { id: 505, title: '选项505选项505选项505选项505', thumb: 'https://ss0.baidu.com/73x1bjeh1BF3odCf/it/u=2911576090,1350833088&fm=85&s=34314E341F006D62427241400300B0F8', time: '2017-08-09', address: '北京' }
           ]
-        },
-        {
-          id: 4,
-          title: '选项4',
-          list: []
         }
       ]
     }
@@ -80,7 +76,13 @@ export default {
   methods: {
     handleTabChange ({ mp }) {
       this.currentTab = parseInt(mp.detail.key)
-    }
+    },
+    ...mapActions(['fetchMyActivities'])
+  },
+  onShow () {
+    this.fetchMyActivities().then(res => {
+      console.log(res)
+    })
   },
   created () {}
 }

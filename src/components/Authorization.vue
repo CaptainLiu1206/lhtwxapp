@@ -6,7 +6,7 @@
   </div>
 </template>
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions, mapGetters } from 'vuex'
 
 export default {
   name: '',
@@ -16,35 +16,31 @@ export default {
       default: false
     }
   },
+  computed: {
+    ...mapGetters(['userInfo'])
+  },
   methods: {
     bindgetuserinfo (res) {
-      const { nickName, avatarUrl, city, gender } = res.mp.detail.userInfo
-      this.setUser({
-        isAuthorization: true,
-        nickname: nickName,
-        userimage: avatarUrl,
-        city,
-        gender
-      })
+      const { encryptedData, iv } = res.mp.detail
+      this.updLoginInfoFn(encryptedData, iv)
     },
     getUserInfo () {
       let _this = this
       wx.getUserInfo({
         withCredentials: true,
         success (res) {
-          const userInfo = res.userInfo
-          const { nickName, avatarUrl, city, gender } = userInfo.nickName
-          _this.setUser({
-            isAuthorization: true,
-            nickname: nickName,
-            userimage: avatarUrl,
-            city,
-            gender
-          })
+          const { encryptedData, iv } = res
+          _this.updLoginInfoFn(encryptedData, iv)
         }
       })
     },
-    ...mapMutations(['setUser'])
+    updLoginInfoFn (encryptedData, iv) {
+      this.updLoginInfo({encryptedData, iv, session_key: this.userInfo.session_key}).then(res => {
+        console.log(`updLoginInfo ${res ? 'success' : 'fail'}`)
+      })
+    },
+    ...mapMutations(['setUser']),
+    ...mapActions(['updLoginInfo'])
   }
 }
 </script>

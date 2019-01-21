@@ -67,7 +67,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import Authorization from 'components/Authorization'
-import { formatTime } from 'utils'
+// import { formatTime } from 'utils'
 
 export default {
   components: {
@@ -112,29 +112,13 @@ export default {
     ...mapActions(['fetchIndexInfo'])
   },
   created () {
-    this.fetchIndexInfo().then(({newest, selected, classify, banner}) => {
-      this.newest = handleActivityList(newest)
-      this.activities = handleActivityList(selected)
-      this.categories = classify.splice(0, 7)
-      this.banners = banner
+    this.fetchIndexInfo().then(({banners, categories, activities, newest}) => {
+      this.newest = newest
+      this.activities = activities
+      this.categories = categories
+      this.banners = banners
     })
   }
-}
-
-function handleActivityList (list) {
-  let _list = list.reduce((arr, item) => {
-    const { id, cost, headimg, startTime, title } = item
-    let { year, month, day } = formatTime(startTime)
-    arr.push({
-      id: id,
-      title,
-      price: cost,
-      imgUrl: headimg,
-      startTime: `${year}-${month}-${day}`
-    })
-    return arr
-  }, [])
-  return _list
 }
 </script>
 
@@ -187,7 +171,7 @@ function handleActivityList (list) {
       height: 400rpx;
     }
   }
-  
+
   .categories {
     display: flex;
     padding: 0 15px;

@@ -12,8 +12,11 @@ const getters = {
     return state.cityList
   },
   categories (state) {
-    console.log(state.categories)
     return state.categories
+  },
+  userInfo (state) {
+    // console.log(state)
+    return state.user
   }
 }
 

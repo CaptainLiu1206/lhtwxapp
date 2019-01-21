@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import ActiveCard from 'components/active-card'
 export default {
   components: {
@@ -29,7 +30,14 @@ export default {
       ]
     }
   },
-  methods: {},
+  methods: {
+    ...mapActions(['fetchMyCollections'])
+  },
+  onShow () {
+    this.fetchMyCollections().then(list => {
+      this.list = list
+    })
+  },
   created () {}
 }
 </script>

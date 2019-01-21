@@ -8,8 +8,8 @@ const mutations = {
   setUser (state, user) {
     state.user = {...state.user, ...user}
   },
-  setCityListAndCategories (state, {area, categories}) {
-    state.cityList = area
+  setCityListAndCategories (state, {cityList, categories}) {
+    state.cityList = cityList
     state.categories = categories
   }
 }
