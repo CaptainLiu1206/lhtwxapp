@@ -11,6 +11,9 @@ const mutations = {
   setCityListAndCategories (state, {cityList, categories}) {
     state.cityList = cityList
     state.categories = categories
+  },
+  setCurrentCategoryId (state, id) {
+    state.currentCategoryId = id
   }
 }
 

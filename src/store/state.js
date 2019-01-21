@@ -29,7 +29,8 @@ const state = {
   },
   cityList: [],
   categories: [],
-  currentCity: '全国'
+  currentCity: '全国',
+  setCurrentCategoryId: ''
 }
 
 export default state

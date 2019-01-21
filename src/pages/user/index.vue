@@ -3,8 +3,8 @@
     <div class="avatar-card">
       <div class="avatar-box">
         <div class="avatar">
-          <i-avatar i-class="avatar-icon" size="large">刘</i-avatar>
-          <span class="user-name">王凯</span>
+          <i-avatar i-class="avatar-icon" size="large" :src="userInfo.userimage"></i-avatar>
+          <span class="user-name">{{userInfo.realname || userInfo.nickname}}</span>
         </div>
         <div class="icon-box">
           <i-icon type="setup" size="28" @click="toUserInfoSet"></i-icon>
@@ -62,7 +62,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isAuthorization'])
+    ...mapGetters(['isAuthorization', 'userInfo'])
   },
   methods: {
     toUserInfoSet () {

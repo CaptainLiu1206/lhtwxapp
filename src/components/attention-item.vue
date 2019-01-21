@@ -1,17 +1,18 @@
 <template>
   <div class="attention-item" v-if="attention">
     <div class="attention-left">
-      <img class="avatar" :src="attention.thumb" alt="" />
+      <img class="avatar" :src="attention.companyImgurl" alt="" />
     </div>
     <div class="attention-right">
       <div class="top">
-        <div class="title ellipsis">{{attention.title}}</div>
-        <a class="btn" v-if="isBtn">
-          <slot></slot>
+        <div class="title ellipsis">{{attention.companyName}}</div>
+        <a class="btn" v-if="isBtn" @click="onToggleAttention">
+          <span class="btn-attention add-attention" v-if="!attention.isconcenred">+ 关注</span>
+          <span class="btn-attention cancel-attention" v-if="attention.isconcenred">取消关注</span>
         </a>
       </div>
-      <div class="desc">{{attention.desc}}</div>
-      <div class="address ellipsis">{{attention.address}}</div>
+      <div class="desc">{{attention.compayProfile}}</div>
+      <div class="address ellipsis">{{attention.companyAddress}}</div>
     </div>
   </div>
 </template>
@@ -25,6 +26,11 @@ export default {
     isBtn: {
       type: Boolean,
       default: false
+    }
+  },
+  methods: {
+    onToggleAttention () {
+      this.$emit('btncb')
     }
   }
 }
@@ -72,8 +78,23 @@ export default {
         flex: 1 0 0;
       }
       .btn {
-        width: 50rpx;
+        width: auto;
         text-align: right;
+        .btn-attention {
+          display: block;
+          font-size: 26rpx;
+          line-height: 60rpx;
+          padding: 0 30rpx;
+          border-radius: 10rpx;
+          &.add-attention {
+            background-color: #3B99FB;
+            color: #ffffff;
+          }
+          &.cancel-attention {
+            background-color: #e8e8e8;
+            color: #333;
+          }
+        }
       }
     }
     .desc {

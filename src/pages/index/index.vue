@@ -15,17 +15,17 @@
       <swiper>
         <block v-for="(banner, idx) in banners" :key="idx">
           <swiper-item>
-            <img class="banner-img" :src="banner.title" alt="">
+            <img class="banner-img" :src="banner.title" alt="" @click="onBannerClick(banner)">
           </swiper-item>
         </block>
       </swiper>
     </div>
     <div class="categories">
-      <div class="category" v-for="category in categories" :key="category.id">
+      <div class="category" v-for="category in categories" :key="category.id" @click="toSchedule(category.id)">
         <van-icon class="icon" name="gem-o" />
         <p class="title">{{category.name}}</p>
       </div>
-      <div class="category">
+      <div class="category" @click="toSchedule">
         <van-icon class="icon" name="more-o" />
         <p class="title">更多</p>
       </div>
@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import Authorization from 'components/Authorization'
 // import { formatTime } from 'utils'
 
@@ -76,27 +76,8 @@ export default {
   data () {
     return {
       banners: [],
-      imgUrls: [
-        'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1548165717&di=f5067553402fa156140cc2b0931b4d6e&imgtype=jpg&er=1&src=http%3A%2F%2Fimg0.ph.126.net%2FyPuVuVngJMXkhhOHBmKsow%3D%3D%2F6597981261795990840.jpg',
-        'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1548165717&di=f5067553402fa156140cc2b0931b4d6e&imgtype=jpg&er=1&src=http%3A%2F%2Fimg0.ph.126.net%2FyPuVuVngJMXkhhOHBmKsow%3D%3D%2F6597981261795990840.jpg',
-        'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1548165717&di=f5067553402fa156140cc2b0931b4d6e&imgtype=jpg&er=1&src=http%3A%2F%2Fimg0.ph.126.net%2FyPuVuVngJMXkhhOHBmKsow%3D%3D%2F6597981261795990840.jpg'
-      ],
-      categories: [
-        // {
-        //   id: 1,
-        //   icon: 'gem-o',
-        //   title: '分类1'
-        // }
-      ],
-      activities: [
-        // {
-        //   id: 1,
-        //   imgUrl: 'http://edustor.zhaopin.com/courseimage/1538980970608社保税管750-420.jpg',
-        //   title: '2018年全球金融衍产品大会颁奖盛典',
-        //   startTime: '2018-12-31',
-        //   price: '188'
-        // }
-      ],
+      categories: [],
+      activities: [],
       newest: []
     }
   },
@@ -109,7 +90,26 @@ export default {
         url: '../search-city/main'
       })
     },
-    ...mapActions(['fetchIndexInfo'])
+    toSchedule (id) {
+      if (id) {
+        this.setCurrentCategoryId(id)
+      }
+      wx.switchTab({
+        url: '../schedule/main'
+      })
+    },
+    onBannerClick (banner) {
+      if (banner.urltype === 1 || banner.urltype === '1') {
+        wx.navigateTo({
+          url: `../active-detail/main?id=${banner.linkUrl}`
+        })
+      }
+      if (banner.urltype === 5) {
+        console.log(banner.linkUrl)
+      }
+    },
+    ...mapActions(['fetchIndexInfo']),
+    ...mapMutations(['setCurrentCategoryId'])
   },
   created () {
     this.fetchIndexInfo().then(({banners, categories, activities, newest}) => {

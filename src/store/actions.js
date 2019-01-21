@@ -5,9 +5,14 @@ function errToast (msg) {
   wx.showToast({ title: msg, icon: 'none' })
 }
 
-function handlerActivityTime (time) {
-  let {year, month, day, hour, minute, second} = formatTime(time)
-  return `${year}/${month}/${day} ${hour}:${minute}:${second}`
+function handlerActivityListTime (time) {
+  let {year, month, day} = formatTime(time)
+  return `${year}/${month}/${day}`
+}
+
+function handlerActivityDetailTime (time) {
+  let {year, month, day, hour, minute} = formatTime(time)
+  return `${year}/${month}/${day} ${hour}:${minute}`
 }
 
 function handleIndexActivityList (list) {
@@ -105,7 +110,7 @@ const actions = {
               thumb: headimg,
               price: cost,
               address: areaname,
-              time: `${handlerActivityTime(startTime)} - ${handlerActivityTime(endTime)}`
+              time: `${handlerActivityListTime(startTime)} - ${handlerActivityListTime(endTime)}`
             })
             return arr
           }, [])
@@ -116,9 +121,86 @@ const actions = {
       })
     })
   },
-  fetchActivityDetail (params) {
-    fly.get('/activity/getActivityDetail', {params}).then(res => {
-      console.log(res)
+  fetchActivityDetail ({state, commit}, params) {
+    return new Promise((resolve, reject) => {
+      fly.get('/activity/getActivityDetail', {...params, unionid: state.user.unionid}).then(res => {
+        if (res.code === 200) {
+          const { activityDetail, organization, iscollection, isconcenred } = res.data
+
+          const active = {
+            id: activityDetail.id,
+            headimg: activityDetail.headimg,
+            title: activityDetail.title,
+            price: activityDetail.cost,
+            sponsor: organization.companyName,
+            scale: activityDetail.buynum,
+            time: `${handlerActivityDetailTime(activityDetail.startTime)} - ${handlerActivityDetailTime(activityDetail.endTime)}`,
+            address: activityDetail.address,
+            iscollection
+          }
+
+          const sponsor = {
+            id: organization.id,
+            companyName: organization.companyName,
+            companyImgurl: organization.companyImgurl,
+            companyAddress: organization.companyAddress,
+            compayProfile: organization.compayProfile,
+            isconcenred
+          }
+
+          resolve({success: true, data: {active, sponsor}})
+        } else {
+          errToast(res.msg || '获取我的活动详情失败')
+          resolve({success: false, data: null})
+        }
+      }).catch(err => {
+        errToast(err.msg || '获取我的活动详情失败')
+        reject(err)
+      })
+    })
+  },
+  toggleCollection ({state}, payload) {
+    return new Promise((resolve, reject) => {
+      fly.post('/user/saveUserCollection', {...payload, unionid: state.user.unionid}).then(res => {
+        if (res.code === 200) {
+          resolve({success: true})
+        } else {
+          resolve({success: false, msg: res.msg})
+        }
+      }).catch(err => {
+        errToast(err.msg || '失败')
+        reject(err)
+      })
+    })
+  },
+  toggleAttention ({state}, payload) {
+    return new Promise((resolve, reject) => {
+      fly.post('/user/saveUserConcenred', {...payload, unionid: state.user.unionid}).then(res => {
+        if (res.code === 200) {
+          resolve({success: true})
+        } else {
+          resolve({success: false, msg: res.msg})
+        }
+      }).catch(err => {
+        errToast(err.msg || '失败')
+        reject(err)
+      })
+    })
+  },
+  postUserInfo ({commit, state}, payload) {
+    return new Promise((resolve, reject) => {
+      fly.post('/user/updateUserInfo', {...payload, unionid: state.user.unionid}).then(res => {
+        if (res.code === 200) {
+          commit('setUser', payload)
+          resolve({success: true})
+        } else {
+          resolve({success: false})
+          errToast(res.msg || '保存失败')
+        }
+      }).catch(err => {
+        errToast(err.msg || '保存失败')
+        reject(err)
+      })
     })
   },
   fetchMyActivities ({commit, state}) {
@@ -171,7 +253,7 @@ const actions = {
               title,
               address,
               thumb: headimg,
-              time: `${handlerActivityTime(startTime)} - ${handlerActivityTime(endTime)}`
+              time: `${handlerActivityListTime(startTime)} - ${handlerActivityListTime(endTime)}`
             })
             return arr
           }, [])

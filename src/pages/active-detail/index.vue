@@ -2,7 +2,11 @@
   <div class="active-detail container">
     <div class="active-info scrollbar-hide">
       <div class="top">
-        <img class="active-img" :src="active.imgUrl" alt="">
+        <div class="collection-wrapper" :class="{'clollected': active.iscollection}" @click="onToggleCollection">
+          <img class="star" src="../../assets/img/collected.png" alt="" v-if="active.iscollection">
+          <img class="star" src="../../assets/img/uncollected.png" alt="" v-if="!active.iscollection">
+        </div>
+        <img class="active-img" :src="active.headimg" alt="">
         <div class="info">
           <p class="title">{{active.title}}</p>
           <p class="date ellipsis">{{active.time}}</p>
@@ -10,20 +14,18 @@
         </div>
       </div>
       <div class="mid">
-        <attention-item v-for="sponsor in active.sponsors" :key="`sponsor_${sponsor.id}`" :isBtn="isBtn" :attention="sponsor">
-          <img class="collect-icon" src="../../assets/img/collected.png" alt="">
-        </attention-item>
+        <attention-item :isBtn="isBtn" :attention="sponsor" @btncb="onToggleAttention"></attention-item>
       </div>
       <div class="bottom">
         <div class="title">活动详情</div>
         <div class="list">
           <div class="cell">
             <label class="label">大会主题：</label>
-            <span class="text">{{active.theme}}</span>
+            <span class="text">{{active.title}}</span>
           </div>
           <div class="cell">
             <label class="label">主办方：</label>
-            <span class="text">{{sponsors}}</span>
+            <span class="text">{{active.sponsor}}</span>
           </div>
           <div class="cell">
             <label class="label">大会规模：</label>
@@ -37,10 +39,10 @@
             <label class="label">大会地址：</label>
             <span class="text">{{active.address}}</span>
           </div>
-          <div class="cell">
+          <!-- <div class="cell">
             <label class="label">大会赞助/合作接洽微信：</label>
             <span class="text">{{active.contact}}</span>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -51,27 +53,14 @@
   </div>
 </template>
 <script>
+import { mapActions } from 'vuex'
 import AttentionItem from 'components/attention-item'
 
 export default {
   data () {
     return {
-      active: {
-        id: '',
-        title: '揭秘社保税改后的三类应对方法',
-        theme: '2018产品经理大会 创新·增长·链接',
-        price: 199,
-        imgUrl: 'http://edustor.zhaopin.com/courseimage/1538980970608社保税管750-420.jpg',
-        time: '2018年12月23日 8:00 - 2018年12月23日 10:00',
-        address: '北京朝阳区首开广场',
-        contact: 'dora969',
-        scale: '1000人',
-        sponsors: [
-          { id: 1, title: '北京马拉松比赛1', desc: '额了去忘记了我进去了就完全理解额为了钱饿我去可', address: '北京东城区', thumb: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546529283550&di=addce014fe03d139f9b16d5c92692115&imgtype=0&src=http%3A%2F%2Fimg4.duitang.com%2Fuploads%2Fitem%2F201503%2F29%2F20150329202148_jasit.jpeg' },
-          { id: 2, title: '北京马拉松比赛2', desc: '额了去忘记了我进去了就完全理解额为了钱饿我去可', address: '北京东城区', thumb: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546529283550&di=addce014fe03d139f9b16d5c92692115&imgtype=0&src=http%3A%2F%2Fimg4.duitang.com%2Fuploads%2Fitem%2F201503%2F29%2F20150329202148_jasit.jpeg' },
-          { id: 3, title: '北京马拉松比赛3', desc: '额了去忘记了我进去了就完全理解额为了钱饿我去可', address: '北京东城区', thumb: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546529283550&di=addce014fe03d139f9b16d5c92692115&imgtype=0&src=http%3A%2F%2Fimg4.duitang.com%2Fuploads%2Fitem%2F201503%2F29%2F20150329202148_jasit.jpeg' }
-        ]
-      },
+      active: {},
+      sponsor: {},
       isBtn: true
     }
   },
@@ -92,10 +81,61 @@ export default {
       wx.navigateTo({
         url: `../payment/main?id=${this.active.id}`
       })
-    }
+    },
+    onToggleCollection () {
+      this.toggleCollection({activityId: this.active.id}).then((success, msg) => {
+        if (success) {
+          this.active.iscollection = !this.active.iscollection
+          if (this.active.iscollection) {
+            wx.showToast({
+              title: '收藏成功'
+            })
+          } else {
+            wx.showToast({
+              title: '取消收藏成功',
+              icon: 'none'
+            })
+          }
+        } else {
+          wx.showToast({
+            title: msg || this.active.iscollection ? '取消收藏失败' : '收藏失败',
+            icon: 'none'
+          })
+        }
+      })
+    },
+    onToggleAttention (flag) {
+      this.toggleAttention({organizationId: this.sponsor.id}).then((success, msg) => {
+        if (success) {
+          this.sponsor.isconcenred = !this.sponsor.isconcenred
+          if (this.sponsor.isconcenred) {
+            wx.showToast({
+              title: '关注成功'
+            })
+          } else {
+            wx.showToast({
+              title: '取消关注成功',
+              icon: 'none'
+            })
+          }
+        } else {
+          wx.showToast({
+            title: msg || this.sponsor.isconcenred ? '取消关注失败' : '关注失败',
+            icon: 'none'
+          })
+        }
+      })
+    },
+    ...mapActions(['fetchActivityDetail', 'toggleCollection', 'toggleAttention'])
   },
   onShow () {
-    this.active.id = parseInt(this.$mp.query.id)
+    this.fetchActivityDetail({activityId: parseInt(this.$mp.query.id)}).then(({success, data}) => {
+      if (success) {
+        console.log(data.sponsor)
+        this.active = {...data.active}
+        this.sponsor = {...data.sponsor}
+      }
+    })
   },
   onShareAppMessage () {}
 }
@@ -109,9 +149,22 @@ export default {
     flex: 1 0 0;
     overflow-y: auto;
     .top {
+      position: relative;
       background-color: #fff;
       margin-bottom: 40rpx;
       padding-bottom: 20rpx;
+      .collection-wrapper {
+        position: absolute;
+        right: 20rpx;
+        top: 20rpx;
+        width: 60rpx;
+        height: 60rpx;
+        .star {
+          display: block;
+          width: 60rpx;
+          height: 60rpx;
+        }
+      }
       .active-img {
         width: 100%;
         height: 420rpx;

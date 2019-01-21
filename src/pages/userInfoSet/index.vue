@@ -4,20 +4,20 @@
       <div class="form-cell">
         <label class="label">姓名</label>
         <div class="input-block">
-          <input type="text" v-model="userInfo.name" focus placeholder="请输入名字">
+          <input type="text" v-model="userInfo.realname" focus placeholder="请输入名字">
         </div>
       </div>
       <div class="form-cell">
         <label class="label">性别</label>
         <div class="input-block">
-          <input type="text" disabled v-model="userInfo.sex" placeholder="请选择性别" @click="sexActionSheetVisible=true">
+          <input type="text" disabled v-model="userInfo.gender" placeholder="请选择性别" @click="sexActionSheetVisible=true">
           <i-action-sheet :visible="sexActionSheetVisible" :actions="sexActions" show-cancel @cancel="handlerSexSelectCancel" @change="handlerSexSelected"></i-action-sheet>
         </div>
       </div>
       <div class="form-cell">
         <label class="label">手机号</label>
         <div class="input-block">
-          <input type="number" v-model="userInfo.mobile" focus placeholder="请输入手机号">
+          <input type="number" v-model="userInfo.phone" focus placeholder="请输入手机号">
         </div>
       </div>
       <div class="form-cell">
@@ -29,13 +29,13 @@
       <div class="form-cell">
         <label class="label">公司</label>
         <div class="input-block">
-          <input type="text" v-model="userInfo.company" placeholder="请输入公司名称">
+          <input type="text" v-model="userInfo.companyName" placeholder="请输入公司名称">
         </div>
       </div>
       <div class="form-cell">
         <label class="label">地址</label>
         <div class="input-block">
-          <input type="text" v-model="userInfo.address" placeholder="请输入详细地址">
+          <input type="text" v-model="userInfo.companyPosition" placeholder="请输入详细地址">
         </div>
       </div>
     </div>
@@ -46,18 +46,19 @@
 </template>
 
 <script>
-// import { formatTime } from '@/utils/index'
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
   components: {},
   data () {
     return {
       userInfo: {
-        name: '',
-        sex: '',
-        mobile: '',
+        realname: '',
+        gender: '',
+        phone: '',
         email: '',
-        address: '',
-        company: ''
+        companyPosition: '',
+        companyName: ''
       },
       sexActionSheetVisible: false,
       sexActions: [
@@ -66,14 +67,39 @@ export default {
       ]
     }
   },
+  computed: {
+    ...mapGetters({
+      user: 'userInfo'
+    })
+  },
   methods: {
     handlerSexSelectCancel () {
       this.sexActionSheetVisible = false
     },
     handlerSexSelected (e) {
-      this.userInfo.sex = this.sexActions[e.mp.detail.index].name
+      this.userInfo.gender = this.sexActions[e.mp.detail.index].name
       this.handlerSexSelectCancel()
-    }
+    },
+    onSave () {
+      this.postUserInfo(this.userInfo).then(({success}) => {
+        if (success) {
+          wx.showToast({
+            title: '保存成功'
+          })
+          setTimeout(() => {
+            wx.switchTab({
+              url: '../user/main'
+            })
+          }, 500)
+        }
+      })
+    },
+    ...mapActions(['postUserInfo'])
+  },
+  onShow () {
+    Object.keys(this.userInfo).forEach(key => {
+      this.userInfo[key] = this.user[key]
+    })
   },
   created () {}
 }
