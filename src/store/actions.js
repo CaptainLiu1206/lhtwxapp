@@ -103,7 +103,8 @@ const actions = {
     return new Promise((resolve, reject) => {
       fly.get('/activity/searchActivity', params).then(res => {
         if (res.code === 200) {
-          let activities = res.data.reduce((arr, {id, title, headimg, cost, areaname, startTime, endTime}) => {
+          const { list, total, pageSize, pageNum, hasNextPage } = res.data
+          let activities = list.reduce((arr, {id, title, headimg, cost, areaname, startTime, endTime}) => {
             arr.push({
               id,
               title,
@@ -114,9 +115,13 @@ const actions = {
             })
             return arr
           }, [])
-          resolve([...activities, ...activities])
+          resolve({success: true, data: { pageInfo: {total, pageSize, pageNum, hasNextPage}, list: activities }})
+        } else {
+          errToast(res.msg || '获取活动失败')
+          resolve({success: false})
         }
       }).catch(err => {
+        errToast(err.msg || '获取活动失败')
         reject(err)
       })
     })
@@ -194,8 +199,8 @@ const actions = {
           commit('setUser', payload)
           resolve({success: true})
         } else {
-          resolve({success: false})
           errToast(res.msg || '保存失败')
+          resolve({success: false})
         }
       }).catch(err => {
         errToast(err.msg || '保存失败')
@@ -208,9 +213,24 @@ const actions = {
       fly.get('/user/getUserActivity', {unionid: state.user.unionid}).then(res => {
         if (res.code === 200) {
           console.log(res)
-          resolve(res)
+          const data = res.data
+          let activities = {}
+          Object.keys(data).forEach(key => {
+            activities[key] = []
+            data[key].forEach(item => {
+              activities[key].push({
+                id: item.id,
+                title: item.title,
+                thumb: item.headimg,
+                address: item.address,
+                time: `${handlerActivityListTime(item.startTime)} - ${handlerActivityListTime(item.endTime)}`
+              })
+            })
+          })
+          resolve({success: true, activities})
         } else {
           errToast(res.msg || '获取我的活动列表失败')
+          resolve({success: false})
         }
       }).catch(err => {
         errToast(err.msg || '获取我的活动列表失败')
@@ -222,19 +242,10 @@ const actions = {
     return new Promise((resolve, reject) => {
       fly.get('/user/getUserConcenred', {unionid: state.user.unionid}).then(res => {
         if (res.code === 200) {
-          const list = res.data.reduce((arr, {id, companyImgurl, companyName, compayProfile}) => {
-            arr.push({
-              id,
-              title: companyName,
-              thumb: companyImgurl,
-              desc: compayProfile,
-              address: '北京东城区'
-            })
-            return arr
-          }, [])
-          resolve(list)
+          resolve({success: true, list: res.data})
         } else {
           errToast(res.msg || '获取我的关注列表失败')
+          resolve({success: false})
         }
       }).catch(err => {
         errToast(err.msg || '获取我的关注列表失败')

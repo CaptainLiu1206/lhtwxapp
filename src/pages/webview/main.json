@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "个人信息",
+  "usingComponents": {
+    "i-panel": "../../../static/iview/panel/index",
+    "i-input": "../../../static/iview/input/index",
+    "i-button": "../../../static/iview/button/index",
+    "i-action-sheet": "../../../static/iview/action-sheet/index"
+  }
+}

@@ -3,7 +3,7 @@
     <div v-if="list.length" class="attention-list">
       <attention-item v-for="attention in list" :key="attention.id" :attention="attention"></attention-item>
     </div>
-    <i-load-more class="no-data" tip="暂无数据" :loading="false" v-if="!list.length" />
+    <i-load-more class="no-data" tip="暂无关注主办方" :loading="false" v-if="!list.length" />
   </div>
 </template>
 
@@ -26,8 +26,10 @@ export default {
     ...mapActions(['fetchMyattentions'])
   },
   onShow () {
-    this.fetchMyattentions().then(list => {
-      this.list = list
+    this.fetchMyattentions().then(({success, list}) => {
+      if (success) {
+        this.list = list
+      }
     })
   },
   created () {}

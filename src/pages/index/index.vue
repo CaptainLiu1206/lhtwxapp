@@ -5,13 +5,13 @@
         <span class="icon-wrapper">
           <van-icon name="location" size="14px" />
         </span>
-        <span class="name">{{currentCity}}</span>
+        <span class="name">{{currentCity.name}}</span>
       </div>
-      <div class="search-wrapper">
+      <div class="search-wrapper" @click="toSeachActive">
         <van-search placeholder="搜索精彩活动" v-model="value" />
       </div>
     </div>
-    <div class="banner-wrapper">
+    <div class="banner-wrapper" v-if="banners.length">
       <swiper>
         <block v-for="(banner, idx) in banners" :key="idx">
           <swiper-item>
@@ -20,23 +20,23 @@
         </block>
       </swiper>
     </div>
-    <div class="categories">
+    <div class="categories" v-if="categories.length">
       <div class="category" v-for="category in categories" :key="category.id" @click="toSchedule(category.id)">
         <van-icon class="icon" name="gem-o" />
         <p class="title">{{category.name}}</p>
       </div>
-      <div class="category" @click="toSchedule">
+      <div class="category" @click="toSchedule(0)">
         <van-icon class="icon" name="more-o" />
         <p class="title">更多</p>
       </div>
     </div>
-    <div class="activities">
+    <div class="activities" v-if="activities.length">
       <div class="title">强力推荐</div>
       <div class="list">
-        <div class="item" v-for="active in activities" :key="active.id">
+        <div class="item" v-for="active in activities" :key="active.id" @click="seeDetail(active)">
           <image :src="active.imgUrl" />
           <div class="desc">
-            <p class="title">{{active.title}}</p>
+            <p class="title ellipsis">{{active.title}}</p>
             <div class="label">
               <div class="date">{{active.startTime}}</div>
               <div class="price">￥<span class="num">{{active.price}}</span></div>
@@ -45,13 +45,13 @@
         </div>
       </div>
     </div>
-    <div class="activities">
+    <div class="activities" v-if="newest.length">
       <div class="title">最新活动</div>
       <div class="list">
-        <div class="item" v-for="active in newest" :key="active.id">
+        <div class="item" v-for="active in newest" :key="active.id" @click="seeDetail(active)">
           <image :src="active.imgUrl" />
           <div class="desc">
-            <p class="title">{{active.title}}</p>
+            <p class="title ellipsis">{{active.title}}</p>
             <div class="label">
               <div class="date">{{active.startTime}}</div>
               <div class="price">￥<span class="num">{{active.price}}</span></div>
@@ -90,12 +90,22 @@ export default {
         url: '../search-city/main'
       })
     },
+    toSeachActive () {
+      wx.navigateTo({
+        url: '../search-active/main'
+      })
+    },
     toSchedule (id) {
-      if (id) {
+      if (id || id === 0) {
         this.setCurrentCategoryId(id)
       }
       wx.switchTab({
-        url: '../schedule/main'
+        url: `../schedule/main`
+      })
+    },
+    seeDetail (active) {
+      wx.navigateTo({
+        url: `../active-detail/main?id=${active.id}`
       })
     },
     onBannerClick (banner) {
@@ -104,8 +114,10 @@ export default {
           url: `../active-detail/main?id=${banner.linkUrl}`
         })
       }
-      if (banner.urltype === 5) {
-        console.log(banner.linkUrl)
+      if (banner.urltype === 2) {
+        wx.navigateTo({
+          url: `../webview/main?linkurl=${banner.linkUrl}`
+        })
       }
     },
     ...mapActions(['fetchIndexInfo']),
@@ -228,6 +240,7 @@ export default {
         flex: 0 0 50%;
         box-sizing: border-box;
         margin-bottom: 40rpx;
+        overflow: hidden;
         &:nth-child(2n+1) {
           padding-right: 20rpx;
         }
@@ -263,6 +276,7 @@ export default {
               font-weight: bold;
               .num {
                 font-size: 16px;
+                font-weight: 600;
               }
             }
           }

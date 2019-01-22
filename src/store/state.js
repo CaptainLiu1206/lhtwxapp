@@ -27,10 +27,11 @@ const state = {
     phone: '',
     country: ''
   },
-  cityList: [],
   categories: [],
-  currentCity: '全国',
-  setCurrentCategoryId: ''
+  currentCategoryId: 0,
+  cityList: [],
+  currentCityId: 0,
+  currentCityName: '全国'
 }
 
 export default state

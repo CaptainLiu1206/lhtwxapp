@@ -4,7 +4,7 @@
       <p class="title">当前选择城市</p>
       <button hover-class="hover-class" class="city current">
         <van-icon class="icon" name="location" size="14px" />
-        <span>{{currentCity}}</span>
+        <span>{{currentCity.name}}</span>
       </button>
     </div>
     <div class="city-list section">
@@ -31,7 +31,7 @@ export default {
   },
   methods: {
     onSelectCity (city) {
-      this.setCurrentCity(city.name)
+      this.setCurrentCity(city)
       wx.switchTab({
         url: '../schedule/main'
       })

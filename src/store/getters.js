@@ -2,11 +2,15 @@ const getters = {
   registration (state) {
     return state.registration
   },
-  currentCity (state) {
-    return state.currentCity
+  userInfo (state) {
+    // console.log(state)
+    return state.user
   },
   isAuthorization (state) {
     return state.user.isAuthorization
+  },
+  currentCity (state) {
+    return {id: state.currentCityId, name: state.currentCityName}
   },
   cityList (state) {
     return state.cityList
@@ -14,9 +18,8 @@ const getters = {
   categories (state) {
     return state.categories
   },
-  userInfo (state) {
-    // console.log(state)
-    return state.user
+  currentCategoryId (state) {
+    return state.currentCategoryId
   }
 }
 

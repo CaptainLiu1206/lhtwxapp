@@ -1,11 +1,9 @@
 <template>
   <div class="container favourites">
     <div v-if="list.length" class="list">
-      <navigator url="../active-detail/main" v-for="(item, idx) in list" :key="idx">
-        <active-card :isButton="isButton" :item="item"></active-card>
-      </navigator>
+      <active-card v-for="(item, idx) in list" :key="idx" :isButton="isButton" :item="item"></active-card>
     </div>
-    <i-load-more class="no-data" tip="暂无数据" :loading="false" v-if="!list.length" />
+    <i-load-more class="no-data" tip="暂无收藏活动" :loading="false" v-if="!list.length" />
   </div>
 </template>
 

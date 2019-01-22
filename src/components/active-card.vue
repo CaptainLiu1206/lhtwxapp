@@ -1,5 +1,5 @@
 <template>
-  <div class="active-card item">
+  <div class="active-card item" @click="seeDetail">
     <div class="item-left">
       <img class="thumb" :src="item.thumb" alt="">
       <span class="badge" v-if="item.badge">{{item.badge}}</span>
@@ -31,6 +31,14 @@ export default {
   },
   data () {
     return {}
+  },
+  methods: {
+    seeDetail () {
+      let id = this.item.id
+      wx.navigateTo({
+        url: `../active-detail/main?id=${id}`
+      })
+    }
   }
 }
 </script>

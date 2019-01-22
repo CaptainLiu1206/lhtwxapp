@@ -23,7 +23,7 @@
         <div class="address">
           <button hover-class="hover-class" @click="toSeachCity">
             <van-icon class="icon" name="location" size="14px" />
-            <span class="name">{{currentCity}}</span>
+            <span class="name">{{currentCity.name}}</span>
           </button>
         </div>
         <div class="category">
@@ -35,14 +35,16 @@
         </div>
       </div>
     </div>
-    <div class="activities-box">
+    <div class="activities-box" v-if="list.length">
       <div class="title">活动列表</div>
-      <div class="list" v-if="list.length">
-        <div @click="toSign(item.id)" v-for="(item, idx) in list" :key="idx">
+      <div class="list">
+        <div v-for="(item, idx) in list" :key="idx">
           <active-card :isButton="isButton" :item="item"></active-card>
         </div>
       </div>
-      <i-load-more tip="暂无活动" :loading="false" v-else />
+    </div>
+    <div class="activities-box" v-else>
+      <i-load-more tip="暂无活动" :loading="false" />
     </div>
     <Authorization :isShow="!isAuthorization" />
   </div>
@@ -62,20 +64,46 @@ export default {
     return {
       currentTab: 0,
       isButton: true,
-      date: '2018-08-16',
-      day: '周三',
-      list: []
+      date: '',
+      day: '',
+      categoryId: '',
+      list: [],
+      pageInfo: {
+        total: 0,
+        pageSize: 100,
+        pageNum: 1,
+        hasNextPage: false
+      }
     }
   },
   computed: {
-    ...mapGetters(['currentCity', 'isAuthorization', 'categories'])
+    ...mapGetters(['currentCity', 'isAuthorization', 'categories', 'currentCategoryId'])
   },
   onShow () {
-    this.fetchActivities({title: '测试1'}).then(data => {
-      this.list = data
-    })
+    const now = new Date()
+    const {year, month, day} = formatTime(now)
+    this.date = `${year}-${month}-${day}`
+    this.day = getUperDay(now.getDay())
+    this.currentTab = this.currentCategoryId
+    this.onFetchActivities()
   },
   methods: {
+    onFetchActivities () {
+      let payload = {
+        pageSize: this.pageInfo.pageSize,
+        pageNum: this.pageInfo.pageNum
+      }
+      this.currentCity.id && (payload.cityId = this.currentCity.id)
+      this.currentTab && (payload.categoryId = this.currentTab)
+      this.date && (payload.time = new Date(this.date))
+
+      this.fetchActivities(payload).then(({success, data}) => {
+        if (success) {
+          this.list = data.list
+          this.pageInfo = {...this.pageInfo, ...data.pageInfo}
+        }
+      })
+    },
     toSeachCity () {
       wx.navigateTo({
         url: '../search-city/main'
@@ -85,18 +113,22 @@ export default {
       const {year, month, day} = formatTime(new Date(this.date).getTime() - 24 * 60 * 60 * 1000)
       this.date = `${year}-${month}-${day}`
       this.day = getUperDay(new Date(this.date).getDay())
+      this.onFetchActivities()
     },
     onNext () {
       const {year, month, day} = formatTime(new Date(this.date).getTime() + 24 * 60 * 60 * 1000)
       this.date = `${year}-${month}-${day}`
       this.day = getUperDay(new Date(this.date).getDay())
+      this.onFetchActivities()
     },
     handleTabChange ({ mp }) {
       this.currentTab = parseInt(mp.detail.key)
+      this.onFetchActivities()
     },
     bindDateChange ({ mp }) {
       this.date = mp.detail.value
       this.day = getUperDay(new Date(this.date).getDay())
+      this.onFetchActivities()
     },
     toSign (id) {
       wx.navigateTo({

@@ -3,7 +3,8 @@ const mutations = {
     state.registration = payload
   },
   setCurrentCity (state, city) {
-    state.currentCity = city
+    state.currentCityId = city.id
+    state.currentCityName = city.name
   },
   setUser (state, user) {
     state.user = {...state.user, ...user}

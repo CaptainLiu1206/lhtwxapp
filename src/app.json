@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/main",
+    "pages/search-active/main",
     "pages/schedule/main",
     "pages/activities/main",
     "pages/search-city/main",

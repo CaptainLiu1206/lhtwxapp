@@ -76,6 +76,10 @@ export default {
   components: {
     AttentionItem
   },
+  onUnload () {
+    this.active = {}
+    this.sponsor = {}
+  },
   methods: {
     toBuy () {
       wx.navigateTo({
