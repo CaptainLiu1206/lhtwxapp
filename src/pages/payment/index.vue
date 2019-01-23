@@ -3,7 +3,7 @@
     <div class="main">
       <div class="active-info">
         <div class="left">
-          <img :src="active.thumb" alt="">
+          <img :src="active.headimg" alt="">
         </div>
         <div class="right">
           <div class="title">{{active.title}}</div>
@@ -17,11 +17,11 @@
       <div class="registration-info" v-if="!isAdd">
         <div class="item">
           <label class="label">姓名：</label>
-          <span class="text">{{registration.name}}</span>
+          <span class="text">{{registration.realname}}</span>
         </div>
         <div class="item">
           <label class="label">手机号：</label>
-          <span class="text">{{registration.mobile}}</span>
+          <span class="text">{{registration.phone}}</span>
         </div>
         <div class="item">
           <label class="label">邮箱：</label>
@@ -29,11 +29,11 @@
         </div>
         <div class="item">
           <label class="label">公司名称：</label>
-          <span class="text">{{registration.company}}</span>
+          <span class="text">{{registration.companyName}}</span>
         </div>
         <div class="item">
           <label class="label">职位：</label>
-          <span class="text">{{registration.job}}</span>
+          <span class="text">{{registration.position}}</span>
         </div>
         <div class="item">
           <label class="label">备注：</label>
@@ -41,46 +41,101 @@
         </div>
       </div>
     </div>
-    <div class="buy-wrapper">
-      <span class="price">￥{{active.price}}</span>
-      <button class="btn">立即支付</button>
+    <div :class="buyWrapperClass">
+      <van-submit-bar
+        :price="active.price * 100"
+        :button-text="buyBtnText"
+        :tip="true"
+        @submit="onPay">
+        <view slot="tip">温馨提示：支持报名多次报名且可以帮别人报名，您已经报名3次</view>
+      </van-submit-bar>
     </div>
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   data () {
     return {
-      active: {
-        id: 1,
-        title: '遇见期待的自己-有书2018共读之夜',
-        price: '199',
-        time: '2018年12月16日 8:00 - 2018年12月18日 10:00',
-        address: '北京东城区北京东城区北京东城区',
-        thumb: 'http://edustor.zhaopin.com/courseimage/15366478011041534324032043思考力.jpg'
-      },
+      active: {},
       isButton: false
     }
   },
   computed: {
     isAdd () {
-      const { name, mobile, email } = this.registration
-      return name && mobile && email ? 0 : 1
+      const { realname, phone, email } = this.registration
+      return realname && phone && email ? 0 : 1
     },
-    ...mapGetters(['registration'])
+    buyWrapperClass () {
+      if (this.isIphoneX) {
+        return 'buy-wrapper higher'
+      } else {
+        return 'buy-wrapper'
+      }
+    },
+    buyBtnText () {
+      return this.active.price ? '立即支付' : '免费领取'
+    },
+    ...mapGetters(['registration', 'isIphoneX'])
   },
   components: {},
   onShow () {
     this.active.id = parseInt(this.$mp.query.id)
+    let active = wx.getStorageSync('active') || '{}'
+    this.active = JSON.parse(active)
+  },
+  onUnload () {
+    this.active = {}
+    wx.removeStorageSync('active')
   },
   methods: {
+    onPay () {
+      const {id, price} = this.active
+      const {realname, companyName, phone, email, position, remark} = this.registration
+      if (!realname || !phone || !email) {
+        wx.showToast({
+          icon: 'none',
+          title: '请完善报名信息'
+        })
+        return false
+      }
+      const payload = {
+        payment: price,
+        goodsId: id,
+        goodsCount: 1,
+        goodsPrice: price,
+        realname,
+        companyName,
+        phone,
+        email,
+        position,
+        remark
+      }
+      this.postPay(payload).then(({success, msg}) => {
+        if (success) {
+          wx.showToast({
+            title: '支付成功'
+          })
+          setTimeout(() => {
+            wx.navigateTo({
+              url: '../my-activities/main'
+            })
+          }, 500)
+        } else {
+          wx.showToast({
+            icon: 'none',
+            title: msg
+          })
+        }
+      })
+    },
     toAddRegistration () {
       wx.navigateTo({
         url: '../add-registration/main'
       })
-    }
+    },
+    ...mapActions(['postPay'])
   }
 }
 </script>
@@ -150,32 +205,9 @@ export default {
     }
   }
   .buy-wrapper {
-    display:flex;
-    padding:0 40rpx;
-    justify-content:space-between;
-    align-items:center;
-    width:100%;
-    flex: 100rpx 0 0;
-    font-size:36rpx;
-    color:rgb(239, 79, 57);
-    font-weight:bold;
-    background:#fff;
-    box-sizing:border-box;
-    box-shadow:1rpx 0rpx 4rpx rgba(0, 0, 0,0.2);
-    border-top: 2rpx solid #e8e8e8;
-    .price {
-      flex: 1 0 0;
-    }
-    .btn {
-      font-size:30rpx;
-      color:rgb(255, 255, 255);
-      border-radius:10rpx;
-      flex: 200rpx 0 0;
-      height: 70rpx;
-      line-height: 70rpx;
-      background:rgb(239, 79, 57);
-      box-shadow:1px 1px 30px 1px rgba(239, 79, 57,0.15);
-      border:none;
+    flex: 88px 0 0;
+    &.higher {
+      flex: 122px 0 0;
     }
   }
 }

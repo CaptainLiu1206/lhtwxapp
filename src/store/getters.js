@@ -20,6 +20,9 @@ const getters = {
   },
   currentCategoryId (state) {
     return state.currentCategoryId
+  },
+  isIphoneX (state) {
+    return state.isIphoneX
   }
 }
 

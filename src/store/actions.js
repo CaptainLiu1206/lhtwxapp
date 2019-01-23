@@ -62,7 +62,6 @@ const actions = {
   updLoginInfo ({commit}, payload) {
     return new Promise((resolve, reject) => {
       fly.post('/updUserInfo', payload).then(res => {
-        console.log(res)
         if (res.code === 200) {
           const { user } = res.data
           commit('setUser', {...user, isAuthorization: true})
@@ -130,7 +129,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       fly.get('/activity/getActivityDetail', {...params, unionid: state.user.unionid}).then(res => {
         if (res.code === 200) {
-          const { activityDetail, organization, iscollection, isconcenred } = res.data
+          const { activityDetail, organization, iscollection, isconcenred, leavingmessage } = res.data
 
           const active = {
             id: activityDetail.id,
@@ -144,6 +143,8 @@ const actions = {
             iscollection
           }
 
+          console.log(active)
+
           const sponsor = {
             id: organization.id,
             companyName: organization.companyName,
@@ -153,13 +154,39 @@ const actions = {
             isconcenred
           }
 
-          resolve({success: true, data: {active, sponsor}})
+          const leavingmessages = []
+          leavingmessage.forEach(item => {
+            item.respone_message && (leavingmessages.push({
+              id: item.id,
+              nickname: item.nickname,
+              userimage: item.userimage,
+              question: item.leaving_message,
+              answer: item.respone_message
+            }))
+          })
+
+          resolve({success: true, data: {active, sponsor, leavingmessages}})
         } else {
           errToast(res.msg || '获取我的活动详情失败')
           resolve({success: false, data: null})
         }
       }).catch(err => {
         errToast(err.msg || '获取我的活动详情失败')
+        reject(err)
+      })
+    })
+  },
+  saveUserLeavingMessage ({state}, payload) {
+    return new Promise((resolve, reject) => {
+      fly.post('/activity/saveUserLeavingMessage', {...payload, unionid: state.user.unionid}).then(res => {
+        if (res.code === 200) {
+          resolve({success: true})
+        } else {
+          resolve({success: false})
+          errToast(res.msg || '提交失败')
+        }
+      }).catch(err => {
+        errToast(err.msg || '提交失败')
         reject(err)
       })
     })
@@ -274,6 +301,21 @@ const actions = {
         }
       }).catch(err => {
         errToast(err.msg || '获取我的收藏列表失败')
+        reject(err)
+      })
+    })
+  },
+  postPay ({state}, payload) {
+    return new Promise((resolve, reject) => {
+      let url = payload.payment === 0 ? '/order/payFree' : '/order/unifiedOrder'
+      fly.post(url, {...payload, unionid: state.user.unionid}).then(res => {
+        if (res.code === 200) {
+          resolve({success: true})
+        } else {
+          resolve({success: false, msg: res.msg || '支付失败'})
+        }
+      }).catch(err => {
+        errToast(err.msg || '支付失败')
         reject(err)
       })
     })

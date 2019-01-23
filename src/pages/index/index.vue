@@ -5,7 +5,7 @@
         <span class="icon-wrapper">
           <van-icon name="location" size="14px" />
         </span>
-        <span class="name">{{currentCity.name}}</span>
+        <span class="name ellipsis">{{currentCity.name}}</span>
       </div>
       <div class="search-wrapper" @click="toSeachActive">
         <van-search placeholder="搜索精彩活动" v-model="value" />
@@ -141,7 +141,7 @@ export default {
     display: flex;
     overflow: hidden;
     .address {
-      width: 70px;
+      width: auto;
       padding-left: 10px;
       line-height: 44px;
       font-size: 0;
@@ -154,6 +154,7 @@ export default {
         overflow: hidden;
       }
       >.name {
+        max-width: 70px;
         font-size: 14px;
         display: inline-block;
         vertical-align: middle;

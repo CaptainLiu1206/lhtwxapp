@@ -1,6 +1,9 @@
 {
   "navigationBarTitleText": "活动详情",
   "usingComponents": {
-    "i-panel": "../../../static/iview/panel/index"
+    "van-panel": "../../../static/vant/panel/index",
+    "van-field": "../../../static/vant/field/index",
+    "van-button": "../../../static/vant/button/index",
+    "van-submit-bar": "../../../static/vant/submit-bar/index"
   }
 }

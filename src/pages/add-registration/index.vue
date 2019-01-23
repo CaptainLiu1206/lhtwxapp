@@ -4,13 +4,13 @@
       <div class="form-cell required">
         <label class="label">用户名</label>
         <div class="input-block">
-          <input type="text" v-model="registration.name" focus placeholder="请输入用户名">
+          <input type="text" v-model="registration.realname" focus placeholder="请输入用户名">
         </div>
       </div>
       <div class="form-cell required">
         <label class="label">手机号</label>
         <div class="input-block">
-          <input type="number" v-model="registration.mobile" placeholder="请输入手机号">
+          <input type="number" v-model="registration.phone" placeholder="请输入手机号">
         </div>
       </div>
       <div class="form-cell required">
@@ -22,13 +22,13 @@
       <div class="form-cell">
         <label class="label">公司</label>
         <div class="input-block">
-          <input type="text" v-model="registration.company" placeholder="请输入公司名称">
+          <input type="text" v-model="registration.companyName" placeholder="请输入公司名称">
         </div>
       </div>
       <div class="form-cell">
         <label class="label">职位</label>
         <div class="input-block">
-          <input type="text" v-model="registration.job" placeholder="请输入职位名称">
+          <input type="text" v-model="registration.position" placeholder="请输入职位名称">
         </div>
       </div>
       <div class="form-cell">
@@ -52,18 +52,37 @@ export default {
   data () {
     return {
       registration: {
-        name: '',
-        mobile: '',
+        realname: '',
+        phone: '',
         email: '',
-        company: '',
-        job: '',
+        companyName: '',
+        position: '',
         remark: ''
       }
     }
   },
   methods: {
     onSave () {
-      this.setRegistration(this.registration)
+      const registration = this.registration
+      let realname = registration.realname.trim()
+      let phone = registration.phone.trim()
+      let email = registration.email.trim()
+      if (!realname || !phone || !email) {
+        wx.showToast({
+          icon: 'none',
+          title: '请完善报名信息'
+        })
+        return false
+      }
+
+      this.setRegistration({
+        realname,
+        phone,
+        email,
+        companyName: registration.companyName.trim(),
+        position: registration.position.trim(),
+        remark: registration.remark.trim()
+      })
       wx.navigateBack({
         delta: 1
       })

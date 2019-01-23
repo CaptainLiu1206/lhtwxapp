@@ -1,12 +1,19 @@
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 
 export default {
   created () {
+    let _this = this
+    wx.getSystemInfo({
+      success (res) {
+        _this.setIsIphoneX(res.model.indexOf('iPhone X') !== -1)
+      }
+    })
     this.login()
   },
   methods: {
-    ...mapActions(['login'])
+    ...mapActions(['login']),
+    ...mapMutations(['setIsIphoneX'])
   }
 }
 </script>

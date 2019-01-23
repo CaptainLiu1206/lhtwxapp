@@ -37,7 +37,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .attention-item {
-  height: 220rpx;
+  height: 200rpx;
   display: flex;
   margin-bottom: 30rpx;
   padding: 20rpx 30rpx;
@@ -49,13 +49,13 @@ export default {
     margin-bottom: 0;
   }
   .attention-left {
-    flex: 160rpx 0 0;
+    flex: 180rpx 0 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     .avatar {
-      width: 120rpx;
-      height: 120rpx;
+      width: 160rpx;
+      height: 160rpx;
       border-radius: 50%;
     }
   }
@@ -70,22 +70,23 @@ export default {
       margin-bottom: 10rpx;
       width: 100%;
       height: 50rpx;
-      font-size: 32rpx;
       font-weight: bold;
       line-height: 50rpx;
       color: #333;
       .title {
         flex: 1 0 0;
+        font-size: 14px;
+        color: #333;
       }
       .btn {
         width: auto;
         text-align: right;
         .btn-attention {
           display: block;
-          font-size: 26rpx;
-          line-height: 60rpx;
-          padding: 0 30rpx;
-          border-radius: 10rpx;
+          font-size: 12px;
+          line-height: 30px;
+          padding: 0 15px;
+          border-radius: 2px;
           &.add-attention {
             background-color: #3B99FB;
             color: #ffffff;
@@ -99,7 +100,7 @@ export default {
     }
     .desc {
       width: 100%;
-      font-size: 28rpx;
+      font-size: 12px;
       line-height: 34rpx;
       color: #666;
       max-height: 68rpx;
@@ -113,7 +114,7 @@ export default {
     }
     .address {
       width: 100%;
-      font-size: 24rpx;
+      font-size: 12px;
       line-height: 24rpx;
       height: 24rpx;
       color: #999;

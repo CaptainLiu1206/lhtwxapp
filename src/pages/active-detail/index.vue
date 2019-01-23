@@ -13,47 +13,80 @@
           <p class="address ellipsis">{{active.address}}</p>
         </div>
       </div>
-      <div class="mid">
+      <div class="mid"  v-if="sponsor.id">
         <attention-item :isBtn="isBtn" :attention="sponsor" @btncb="onToggleAttention"></attention-item>
       </div>
-      <div class="bottom">
-        <div class="title">活动详情</div>
-        <div class="list">
-          <div class="cell">
-            <label class="label">大会主题：</label>
-            <span class="text">{{active.title}}</span>
+      <view class="panel-wrapper">
+        <van-panel title="活动详情">
+          <div class="widget">
+            <div class="list">
+              <div class="cell">
+                <label class="label">大会主题：</label>
+                <span class="text">{{active.title}}</span>
+              </div>
+              <div class="cell">
+                <label class="label">主办方：</label>
+                <span class="text">{{active.sponsor}}</span>
+              </div>
+              <div class="cell">
+                <label class="label">大会规模：</label>
+                <span class="text">{{active.scale}}</span>
+              </div>
+              <div class="cell">
+                <label class="label">大会时间：</label>
+                <span class="text">{{active.time}}</span>
+              </div>
+              <div class="cell">
+                <label class="label">大会地址：</label>
+                <span class="text">{{active.address}}</span>
+              </div>
+            </div>
           </div>
-          <div class="cell">
-            <label class="label">主办方：</label>
-            <span class="text">{{active.sponsor}}</span>
-          </div>
-          <div class="cell">
-            <label class="label">大会规模：</label>
-            <span class="text">{{active.scale}}</span>
-          </div>
-          <div class="cell">
-            <label class="label">大会时间：</label>
-            <span class="text">{{active.time}}</span>
-          </div>
-          <div class="cell">
-            <label class="label">大会地址：</label>
-            <span class="text">{{active.address}}</span>
-          </div>
-          <!-- <div class="cell">
-            <label class="label">大会赞助/合作接洽微信：</label>
-            <span class="text">{{active.contact}}</span>
-          </div> -->
-        </div>
-      </div>
+        </van-panel>
+      </view>
+      <view class="panel-wrapper">
+        <van-panel title="咨询" use-footer-slot class="sub-question">
+          <view class="form-wrapper">
+            <van-field type="text" placeholder="请输入问题" :value="leavingMessage" @change="onTextChange" :maxlength="150" :clearable="true" />
+          </view>
+          <view slot="footer" class="footer">
+            <van-button type="primary" size="small" @click="onSubmit">提交</van-button>
+          </view>
+        </van-panel>
+      </view>
+      <view class="panel-wrapper" v-if="leavingmessages.length">
+        <van-panel title="全部问题">
+          <view class="list questions">
+            <view class="item" v-for="question in leavingmessages" :key="question.id">
+              <view class="left">
+                <image class="avatar" :src="question.userimage" />
+                <view class="name ellipsis">{{question.nickname}}</view>
+              </view>
+              <view class="right">
+                <view class="question">{{question.question}}</view>
+                <view class="answer">
+                  <span>回复：</span>
+                  <text>{{question.answer}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </van-panel>
+      </view>
     </div>
-    <div class="buy-wrapper">
-      <span class="price">￥{{active.price}}</span>
-      <button class="btn" @click="toBuy">立即购买</button>
+    <div :class="buyWrapperClass">
+      <van-submit-bar
+        :price="active.price * 100"
+        button-text="立即购买"
+        :tip="true"
+        @submit="toBuy">
+        <view slot="tip">温馨提示：支持报名多次报名且可以帮别人报名，您已经报名3次{{active.price}}</view>
+      </van-submit-bar>
     </div>
   </div>
 </template>
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import AttentionItem from 'components/attention-item'
 
 export default {
@@ -61,7 +94,9 @@ export default {
     return {
       active: {},
       sponsor: {},
-      isBtn: true
+      isBtn: true,
+      leavingMessage: '',
+      leavingmessages: []
     }
   },
   computed: {
@@ -71,7 +106,15 @@ export default {
         return _str
       }, '') : ''
       return str.length > 0 ? str.slice(0, -2) : ''
-    }
+    },
+    buyWrapperClass () {
+      if (this.isIphoneX) {
+        return 'buy-wrapper higher'
+      } else {
+        return 'buy-wrapper'
+      }
+    },
+    ...mapGetters(['userInfo', 'isIphoneX'])
   },
   components: {
     AttentionItem
@@ -81,7 +124,39 @@ export default {
     this.sponsor = {}
   },
   methods: {
+    onTextChange (e) {
+      this.leavingMessage = e.mp.detail
+    },
+    onSubmit () {
+      const leavingMessage = this.leavingMessage.trim()
+      if (!leavingMessage) {
+        this.leavingMessage = ''
+        wx.showToast({
+          icon: 'none',
+          title: '请填写问题'
+        })
+        return false
+      }
+      if (!this.active.id) {
+        wx.showToast({
+          icon: 'none',
+          title: '活动数据出错'
+        })
+        return false
+      }
+      this.saveUserLeavingMessage({activityId: this.active.id, leavingMessage}).then(({success}) => {
+        if (success) {
+          wx.showToast({
+            title: '提问成功'
+          })
+          this.leavingMessage = ''
+        }
+      })
+    },
     toBuy () {
+      let activeStr = JSON.stringify(this.active)
+      wx.setStorageSync('active', activeStr)
+
       wx.navigateTo({
         url: `../payment/main?id=${this.active.id}`
       })
@@ -130,14 +205,14 @@ export default {
         }
       })
     },
-    ...mapActions(['fetchActivityDetail', 'toggleCollection', 'toggleAttention'])
+    ...mapActions(['fetchActivityDetail', 'toggleCollection', 'toggleAttention', 'saveUserLeavingMessage'])
   },
   onShow () {
     this.fetchActivityDetail({activityId: parseInt(this.$mp.query.id)}).then(({success, data}) => {
       if (success) {
-        console.log(data.sponsor)
         this.active = {...data.active}
         this.sponsor = {...data.sponsor}
+        this.leavingmessages = [...data.leavingmessages]
       }
     })
   },
@@ -174,14 +249,14 @@ export default {
         height: 420rpx;
       }
       .info {
-        padding: 0 30rpx;
-        line-height: 32rpx;
-        font-size: 28rpx;
+        padding: 0 15px;
+        line-height: 16px;
+        font-size: 12px;
         color: #666;
         .title {
-          margin: 20rpx 0;
-          font-size: 40rpx;
-          line-height: 40rpx;
+          margin: 10px 0;
+          font-size: 16px;
+          line-height: 20px;
           color: #333;
         }
         .address {
@@ -196,49 +271,73 @@ export default {
         height: 50rpx;
       }
     }
-    .bottom {
-      padding: 30rpx;
-      background-color: #fff;
+    .panel-wrapper {
       margin: 40rpx 0;
-      .title {
-        margin-bottom: 20rpx;
-        font-size: 40rpx;
+      .widget {
+        padding: 15px;
+        background-color: #fff;
+        .cell {
+          margin-bottom: 10rpx;
+          font-size: 14px;
+          line-height: 24px;
+          color: #333;
+        }
       }
-      .cell {
-        margin-bottom: 10rpx;
-        font-size: 28rpx;
-        line-height: 40rpx;
-        font-size: #333;
+      .questions {
+        padding: 15px;
+        .item {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          margin-bottom: 15px;
+          &:last-child {
+            margin-bottom: 0;
+          }
+          .left {
+            width: 80rpx;
+            overflow: hidden;
+            .avatar {
+              display: block;
+              width: 80rpx;
+              height: 80rpx;
+              overflow: hidden;
+              border-radius: 50%;
+            }
+            .name {
+              text-align: center;
+              margin-top: 6px;
+              color: #666;
+              font-size: 12px;
+            }
+          }
+          .right {
+            flex: 1 0 0;
+            margin-left: 15px;
+            font-size: 12px;
+            color: #333;
+            .question {
+              line-height: 20px;
+            }
+            .answer {
+              margin-top: 10px;
+              padding: 10px;
+              background-color: rgb(244, 247, 250);
+              line-height: 20px;
+            }
+          }
+        }
       }
     }
   }
   .buy-wrapper {
-    display:flex;
-    padding:0 40rpx;
-    justify-content:space-between;
-    align-items:center;
-    width:100%;
-    flex: 100rpx 0 0;
-    font-size:36rpx;
-    color:rgb(239, 79, 57);
-    font-weight:bold;
-    background:#fff;
-    box-sizing:border-box;
-    box-shadow:1rpx 0rpx 4rpx rgba(0, 0, 0,0.2);
-    border-top: 2rpx solid #e8e8e8;
-    .price {
-      flex: 1 0 0;
+    flex: 88px 0 0;
+    &.higher {
+      flex: 122px 0 0;
     }
-    .btn {
-      font-size:30rpx;
-      color:rgb(255, 255, 255);
-      border-radius:10rpx;
-      flex: 200rpx 0 0;
-      height: 70rpx;
-      line-height: 70rpx;
-      background:rgb(239, 79, 57);
-      box-shadow:1px 1px 30px 1px rgba(239, 79, 57,0.15);
-      border:none;
+  }
+  .sub-question {
+    .footer {
+      text-align: right;
     }
   }
 }

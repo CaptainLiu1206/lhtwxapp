@@ -17,9 +17,7 @@ export default {
   },
   data () {
     return {
-      list: [
-        { id: 1, title: '北京马拉松比赛北京马拉松比赛北京马拉松比赛北北京马拉松比赛北京马拉松比赛北京马拉松比赛北京马拉松比赛京马拉松比赛', desc: '额了去忘额了去忘记了我进去了就额了去忘记了我进去了就额了去忘记了我进去了就记了我进去了就', address: '北京东城区', thumb: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546529283550&di=addce014fe03d139f9b16d5c92692115&imgtype=0&src=http%3A%2F%2Fimg4.duitang.com%2Fuploads%2Fitem%2F201503%2F29%2F20150329202148_jasit.jpeg' }
-      ]
+      list: []
     }
   },
   methods: {

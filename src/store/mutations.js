@@ -15,6 +15,9 @@ const mutations = {
   },
   setCurrentCategoryId (state, id) {
     state.currentCategoryId = id
+  },
+  setIsIphoneX (state, flag) {
+    state.isIphoneX = flag
   }
 }
 

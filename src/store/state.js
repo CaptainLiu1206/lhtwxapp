@@ -1,10 +1,10 @@
 const state = {
   registration: {
-    name: '',
-    mobile: '',
+    realname: '',
+    phone: '',
     email: '',
-    company: '',
-    job: '',
+    companyName: '',
+    position: '',
     remark: ''
   },
   user: {
@@ -31,7 +31,8 @@ const state = {
   currentCategoryId: 0,
   cityList: [],
   currentCityId: 0,
-  currentCityName: '全国'
+  currentCityName: '全国',
+  isIphoneX: false
 }
 
 export default state
