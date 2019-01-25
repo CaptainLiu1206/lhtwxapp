@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "选择城市",
+  "navigationBarTitleText": "活动查询",
   "usingComponents": {
     "van-search": "../../../static/vant/search/index",
     "van-icon": "../../../static/vant/icon/index",

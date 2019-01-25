@@ -37,7 +37,6 @@ const actions = {
       success (res) {
         if (res.code) {
           fly.post('/login', {'js_code': res.code}).then(resp => {
-            console.log(resp)
             if (resp.code === 200) {
               const { user, session_key, openid, unionid } = resp.data // eslint-disable-line
               if (unionid && user && user.nickname && user.userimage) {
@@ -76,7 +75,7 @@ const actions = {
       })
     })
   },
-  fetchIndexInfo ({commit}) {
+  fetchIndexInfo ({commit, dispatch}) {
     return new Promise((resolve, reject) => {
       fly.post('/index').then(res => {
         if (res.code === 200) {
@@ -88,6 +87,7 @@ const actions = {
             newest: handleIndexActivityList(newest.list),
             activities: handleIndexActivityList(selected.list)
           }
+          dispatch('fetchUserBanners')
           resolve(resp)
         } else {
           errToast(res.msg || '获取首页信息失败')
@@ -142,8 +142,6 @@ const actions = {
             address: activityDetail.address,
             iscollection
           }
-
-          console.log(active)
 
           const sponsor = {
             id: organization.id,
@@ -239,7 +237,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       fly.get('/user/getUserActivity', {unionid: state.user.unionid}).then(res => {
         if (res.code === 200) {
-          console.log(res)
           const data = res.data
           let activities = {}
           Object.keys(data).forEach(key => {
@@ -284,7 +281,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       fly.get('/user/getUserCollection', {unionid: state.user.unionid}).then(res => {
         if (res.code === 200) {
-          console.log(res)
           const list = res.data.reduce((arr, {id, title, headimg, address, startTime, endTime}) => {
             arr.push({
               id,
@@ -310,13 +306,23 @@ const actions = {
       let url = payload.payment === 0 ? '/order/payFree' : '/order/unifiedOrder'
       fly.post(url, {...payload, unionid: state.user.unionid}).then(res => {
         if (res.code === 200) {
-          resolve({success: true})
+          resolve({success: true, data: res.data})
         } else {
           resolve({success: false, msg: res.msg || '支付失败'})
         }
       }).catch(err => {
         errToast(err.msg || '支付失败')
         reject(err)
+      })
+    })
+  },
+  fetchUserBanners ({commit}) {
+    return new Promise((resolve, reject) => {
+      fly.get('/advertisement/activityList').then(res => {
+        if (res.code === 200) {
+          commit('setUserBanners', res.data)
+          resolve({success: true, list: res.data})
+        }
       })
     })
   }

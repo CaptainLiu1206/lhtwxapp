@@ -2,6 +2,9 @@
   <div class="container user">
     <div class="avatar-card">
       <div class="avatar-box">
+        <div class="blur_bj">
+          <img :src="userInfo.userimage" alt="Alternate Text">
+        </div>
         <div class="avatar">
           <i-avatar i-class="avatar-icon" size="large" :src="userInfo.userimage"></i-avatar>
           <span class="user-name">{{userInfo.realname || userInfo.nickname}}</span>
@@ -9,6 +12,7 @@
         <div class="icon-box">
           <i-icon type="setup" size="28" @click="toUserInfoSet"></i-icon>
         </div>
+        <div class="blur_bj_gray"></div>
       </div>
     </div>
     <i-cell-group>
@@ -32,8 +36,8 @@
       :interval="interval"
       :duration="duration"
     >
-      <swiper-item v-for="(imgUrl, index) in imgUrls" v-bind:key="index">
-        <image :src="imgUrl" class="slide-image" />
+      <swiper-item v-for="banner in userBanners" v-bind:key="banner.id" @click="toWebView(banner)">
+        <image :src="banner.headimg" class="slide-image" />
       </swiper-item>
     </swiper>
     <Authorization :isShow="!isAuthorization" />
@@ -41,7 +45,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import Authorization from 'components/Authorization'
 
 export default {
@@ -50,11 +54,6 @@ export default {
   },
   data () {
     return {
-      imgUrls: [
-        'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546453506553&di=ba2a7ec9cb858c6d8ee381da5775f995&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01edb3555ea8100000009af0ba36f5.jpg%401280w_1l_2o_100sh.jpg',
-        'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546453506553&di=ba2a7ec9cb858c6d8ee381da5775f995&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01edb3555ea8100000009af0ba36f5.jpg%401280w_1l_2o_100sh.jpg',
-        'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546453506553&di=ba2a7ec9cb858c6d8ee381da5775f995&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01edb3555ea8100000009af0ba36f5.jpg%401280w_1l_2o_100sh.jpg'
-      ],
       indicatorDots: true,
       autoplay: true,
       interval: 5000,
@@ -62,13 +61,27 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isAuthorization', 'userInfo'])
+    avatarBoxStyle () {
+      return `background: url(${this.userInfo.userimage}) no-repeat center;`
+    },
+    ...mapGetters(['isAuthorization', 'userInfo', 'userBanners'])
   },
   methods: {
     toUserInfoSet () {
       wx.navigateTo({
         url: '/pages/userInfoSet/main'
       })
+    },
+    toWebView (banner) {
+      wx.navigateTo({
+        url: `../webview/main?linkurl=${banner.linkUrl}`
+      })
+    },
+    ...mapActions(['fetchUserBanners'])
+  },
+  onShow () {
+    if (!this.userBanners.length) {
+      this.fetchUserBanners()
     }
   },
   created () {}
@@ -87,14 +100,37 @@ export default {
       position: relative;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.6);
+      background-color: transparent;
       border-radius: 10rpx;
+      background-size: cover;
+      .blur_bj {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        top: 0;
+        z-index: 1;
+        filter: blur(15px);
+        > img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .blur_bj_gray {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        background: rgba(0,0,0,.2);
+        z-index: 2;
+      }
       .avatar {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         overflow: hidden;
+        z-index: 111;
         .avatar-icon {
           width: 120rpx;
           height: 120rpx;
@@ -113,6 +149,7 @@ export default {
         position: absolute;
         right: 20rpx;
         top: 20rpx;
+        z-index: 111;
       }
     }
   }
@@ -121,10 +158,10 @@ export default {
     bottom: 0;
     left: 0;
     width: 100vw;
-    height: 120rpx;
+    height: 150rpx;
     image {
       width: 100vw;
-      height: 120rpx;
+      height: 150rpx;
     }
   }
 }

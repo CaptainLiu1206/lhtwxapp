@@ -23,6 +23,9 @@ const getters = {
   },
   isIphoneX (state) {
     return state.isIphoneX
+  },
+  userBanners (state) {
+    return state.userBanners
   }
 }
 

@@ -27,6 +27,7 @@ const state = {
     phone: '',
     country: ''
   },
+  userBanners: [],
   categories: [],
   currentCategoryId: 0,
   cityList: [],

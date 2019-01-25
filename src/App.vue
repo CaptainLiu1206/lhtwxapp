@@ -19,6 +19,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import './assets/font/iconfont.css';
+
 .scrollbar-hide {
   &::-webkit-scrollbar {
     width: 0;

@@ -53,7 +53,7 @@
   </div>
 </template>
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
   data () {
@@ -112,16 +112,40 @@ export default {
         position,
         remark
       }
-      this.postPay(payload).then(({success, msg}) => {
+      let _this = this
+      this.postPay(payload).then(({success, data, msg}) => {
         if (success) {
-          wx.showToast({
-            title: '支付成功'
+          wx.requestPayment({
+            timeStamp: data.timeStamp,
+            nonceStr: data.nonceStr,
+            package: data.package,
+            signType: 'MD5',
+            paySign: data.paySign,
+            success (res) {
+              wx.showToast({
+                title: '支付成功'
+              })
+              _this.setRegistration({
+                realname: '',
+                phone: '',
+                email: '',
+                companyName: '',
+                position: '',
+                remark: ''
+              })
+              setTimeout(() => {
+                wx.navigateTo({
+                  url: '../my-activities/main'
+                })
+              }, 500)
+            },
+            fail (res) {
+              wx.showToast({
+                icon: 'none',
+                title: '支付失败'
+              })
+            }
           })
-          setTimeout(() => {
-            wx.navigateTo({
-              url: '../my-activities/main'
-            })
-          }, 500)
         } else {
           wx.showToast({
             icon: 'none',
@@ -135,7 +159,8 @@ export default {
         url: '../add-registration/main'
       })
     },
-    ...mapActions(['postPay'])
+    ...mapActions(['postPay']),
+    ...mapMutations(['setRegistration'])
   }
 }
 </script>

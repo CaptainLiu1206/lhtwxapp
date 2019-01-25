@@ -18,6 +18,9 @@ const mutations = {
   },
   setIsIphoneX (state, flag) {
     state.isIphoneX = flag
+  },
+  setUserBanners (state, banners) {
+    state.userBanners = banners
   }
 }
 

@@ -12,7 +12,8 @@
     "pages/my-attentions/main",
     "pages/my-activities/main",
     "pages/my-favourites/main",
-    "pages/user/main"
+    "pages/user/main",
+    "pages/webview/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

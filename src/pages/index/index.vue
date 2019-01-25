@@ -22,12 +22,16 @@
     </div>
     <div class="categories" v-if="categories.length">
       <div class="category" v-for="category in categories" :key="category.id" @click="toSchedule(category.id)">
-        <van-icon class="icon" name="gem-o" />
+        <view class="icon-wrapper">
+          <text class="iconfont" :class="category.iconUrl"></text>
+        </view>
         <p class="title">{{category.name}}</p>
       </div>
       <div class="category" @click="toSchedule(0)">
-        <van-icon class="icon" name="more-o" />
-        <p class="title">更多</p>
+        <view class="icon-wrapper">
+          <text class="iconfont icon-qita"></text>
+        </view>
+        <p class="title">其它行业</p>
       </div>
     </div>
     <div class="activities" v-if="activities.length">
@@ -67,7 +71,6 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import Authorization from 'components/Authorization'
-// import { formatTime } from 'utils'
 
 export default {
   components: {
@@ -123,6 +126,7 @@ export default {
     ...mapActions(['fetchIndexInfo']),
     ...mapMutations(['setCurrentCategoryId'])
   },
+  onShareAppMessage () {},
   created () {
     this.fetchIndexInfo().then(({banners, categories, activities, newest}) => {
       this.newest = newest
@@ -186,22 +190,71 @@ export default {
   }
 
   .categories {
-    display: flex;
-    padding: 0 15px;
-    margin: 50rpx 0 30rpx;
-    flex-wrap: wrap;
+    margin: 30px 0 15px;
     .category {
-      flex: 0 0 25%;
+      display: inline-block;
+      vertical-align: middle;
       overflow: hidden;
       text-align: center;
-      margin-bottom: 20rpx;
-      .icon {
-        color: #3B99FB;
-        font-size: 24px;
+      margin: 0 30rpx 15px;
+      & + .category {
+        .icon-wrapper {
+          color: rgb(226, 100, 104);
+          border: 4px solid rgb(226, 100, 104);
+        }
+        & + .category {
+          .icon-wrapper {
+            color: rgb(246, 83, 184);
+            border: 4px solid rgb(246, 83, 184);
+          }
+          & + .category {
+            .icon-wrapper {
+              color: rgb(107, 201, 213);
+              border: 4px solid rgb(107, 201, 213);
+            }
+            & + .category {
+              .icon-wrapper {
+                color: rgb(238, 132, 93);
+                border: 4px solid rgb(238, 132, 93);
+              }
+              & + .category {
+                .icon-wrapper {
+                  color: rgb(117, 77, 199);
+                  border: 4px solid rgb(117, 77, 199);
+                }
+                & + .category {
+                  .icon-wrapper {
+                    color: rgb(139, 210, 70);
+                    border: 4px solid rgb(139, 210, 70);
+                  }
+                  & + .category {
+                    .icon-wrapper {
+                      color: rgb(246, 175, 83);
+                      border: 4px solid rgb(246, 175, 83);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      .icon-wrapper {
+        width: 127rpx;
+        height: 127rpx;
+        color: rgb(96, 164, 237);
+        border: 4px solid rgb(96, 164, 237);
+        box-sizing: border-box;
+        border-radius: 50%;
+        .iconfont {
+          font-size: 70rpx;
+          line-height: 110rpx;
+        }
       }
       .title {
-        font-size: 16px;
-        color: #333333;
+        margin-top: 5px;
+        font-size: 12px;
+        color: rgb(159, 159, 159);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
