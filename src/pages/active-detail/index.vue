@@ -3,8 +3,10 @@
     <div class="active-info scrollbar-hide">
       <div class="top">
         <div class="collection-wrapper" :class="{'clollected': active.iscollection}" @click="onToggleCollection">
-          <img class="star" src="../../assets/img/collected.png" alt="" v-if="active.iscollection">
-          <img class="star" src="../../assets/img/uncollected.png" alt="" v-if="!active.iscollection">
+          <van-icon name="like" color="#FC2C22" size="20px" v-if="active.iscollection" />
+          <van-icon name="like-o" color="#44474C" size="20px" v-if="!active.iscollection" />
+          <!-- <img class="star" src="../../assets/img/collected.png" alt="" v-if="active.iscollection">
+          <img class="star" src="../../assets/img/uncollected.png" alt="" v-if="!active.iscollection"> -->
         </div>
         <img class="active-img" :src="active.headimg" alt="">
         <div class="info">
@@ -13,8 +15,8 @@
           <p class="address ellipsis">{{active.address}}</p>
         </div>
       </div>
-      <div class="mid"  v-if="sponsor.id">
-        <attention-item :isBtn="isBtn" :attention="sponsor" @btncb="onToggleAttention"></attention-item>
+      <div class="mid" v-if="sponsor && sponsor.id">
+        <sponsor-card :isBtn="isBtn" :sponsor="sponsor" @btncb="onToggleSponsor"></sponsor-card>
       </div>
       <view class="panel-wrapper">
         <van-panel title="活动详情">
@@ -74,20 +76,20 @@
         </van-panel>
       </view>
     </div>
-    <div :class="buyWrapperClass">
+    <div :class="buyWrapperClass" v-if="!active.isexpired">
       <van-submit-bar
         :price="active.price * 100"
-        button-text="立即购买"
+        :button-text="buyBtnText"
         :tip="true"
         @submit="toBuy">
-        <view slot="tip">温馨提示：支持报名多次报名且可以帮别人报名，您已经报名3次{{active.price}}</view>
+        <view slot="tip">温馨提示：请您在购买之前，确认填写报名信息真实有效。</view>
       </van-submit-bar>
     </div>
   </div>
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import AttentionItem from 'components/attention-item'
+import SponsorCard from 'components/sponsor-card'
 
 export default {
   data () {
@@ -107,6 +109,9 @@ export default {
       }, '') : ''
       return str.length > 0 ? str.slice(0, -2) : ''
     },
+    buyBtnText () {
+      return this.active.price ? '立即支付' : '免费领取'
+    },
     buyWrapperClass () {
       if (this.isIphoneX) {
         return 'buy-wrapper higher'
@@ -117,7 +122,7 @@ export default {
     ...mapGetters(['userInfo', 'isIphoneX'])
   },
   components: {
-    AttentionItem
+    SponsorCard
   },
   onUnload () {
     this.active = {}
@@ -183,8 +188,8 @@ export default {
         }
       })
     },
-    onToggleAttention (flag) {
-      this.toggleAttention({organizationId: this.sponsor.id}).then((success, msg) => {
+    onToggleSponsor (flag) {
+      this.toggleSponsor({organizationId: this.sponsor.id}).then((success, msg) => {
         if (success) {
           this.sponsor.isconcenred = !this.sponsor.isconcenred
           if (this.sponsor.isconcenred) {
@@ -205,7 +210,7 @@ export default {
         }
       })
     },
-    ...mapActions(['fetchActivityDetail', 'toggleCollection', 'toggleAttention', 'saveUserLeavingMessage'])
+    ...mapActions(['fetchActivityDetail', 'toggleCollection', 'toggleSponsor', 'saveUserLeavingMessage'])
   },
   onShow () {
     this.fetchActivityDetail({activityId: parseInt(this.$mp.query.id)}).then(({success, data}) => {
@@ -236,17 +241,17 @@ export default {
         position: absolute;
         right: 20rpx;
         top: 20rpx;
-        width: 60rpx;
-        height: 60rpx;
-        .star {
-          display: block;
-          width: 60rpx;
-          height: 60rpx;
-        }
+        width: 30px;
+        height: 30px;
+        line-height: 35px;
+        text-align: center;
+        background-color: rgba(184, 188, 191, 0.8);
+        border-radius:50%;
+        overflow:hidden;
       }
       .active-img {
         width: 100%;
-        height: 420rpx;
+        height: 300rpx;
       }
       .info {
         padding: 0 15px;

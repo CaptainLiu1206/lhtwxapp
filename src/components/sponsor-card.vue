@@ -1,25 +1,25 @@
 <template>
-  <div class="attention-item" v-if="attention">
-    <div class="attention-left">
-      <img class="avatar" :src="attention.companyImgurl" alt="" />
+  <div class="sponsor-item" v-if="sponsor" @click="goDetail">
+    <div class="sponsor-left">
+      <img class="avatar" :src="sponsor.companyImgurl" alt="" />
     </div>
-    <div class="attention-right">
+    <div class="sponsor-right">
       <div class="top">
-        <div class="title ellipsis">{{attention.companyName}}</div>
-        <a class="btn" v-if="isBtn" @click="onToggleAttention">
-          <span class="btn-attention add-attention" v-if="!attention.isconcenred">+ 关注</span>
-          <span class="btn-attention cancel-attention" v-if="attention.isconcenred">取消关注</span>
+        <div class="title ellipsis">{{sponsor.companyName}}</div>
+        <a class="btn" v-if="isBtn" @click.stop="onTogglesponsor">
+          <span class="btn-sponsor add-sponsor" v-if="!sponsor.isconcenred">+ 关注</span>
+          <span class="btn-sponsor cancel-sponsor" v-if="sponsor.isconcenred">取消关注</span>
         </a>
       </div>
-      <div class="desc">{{attention.compayProfile}}</div>
-      <div class="address ellipsis">{{attention.companyAddress}}</div>
+      <div class="desc">{{sponsor.compayProfile}}</div>
+      <div class="address ellipsis">{{sponsor.companyAddress}}</div>
     </div>
   </div>
 </template>
 <script>
 export default {
   props: {
-    attention: {
+    sponsor: {
       type: Object,
       default: null
     },
@@ -29,14 +29,20 @@ export default {
     }
   },
   methods: {
-    onToggleAttention () {
+    onTogglesponsor () {
       this.$emit('btncb')
+    },
+    goDetail () {
+      let self = this
+      wx.navigateTo({
+        url: `../sponsor-detail/main?id=${self.sponsor.id}`
+      })
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-.attention-item {
+.sponsor-item {
   height: 200rpx;
   display: flex;
   margin-bottom: 30rpx;
@@ -48,7 +54,7 @@ export default {
   &:last-child {
     margin-bottom: 0;
   }
-  .attention-left {
+  .sponsor-left {
     flex: 180rpx 0 0;
     display: flex;
     flex-direction: column;
@@ -59,7 +65,7 @@ export default {
       border-radius: 50%;
     }
   }
-  .attention-right {
+  .sponsor-right {
     flex: 1 0 0;
     display: flex;
     flex-direction: column;
@@ -81,17 +87,17 @@ export default {
       .btn {
         width: auto;
         text-align: right;
-        .btn-attention {
+        .btn-sponsor {
           display: block;
           font-size: 12px;
-          line-height: 30px;
-          padding: 0 15px;
+          line-height: 26px;
+          padding: 0 10px;
           border-radius: 2px;
-          &.add-attention {
+          &.add-sponsor {
             background-color: #3B99FB;
             color: #ffffff;
           }
-          &.cancel-attention {
+          &.cancel-sponsor {
             background-color: #e8e8e8;
             color: #333;
           }

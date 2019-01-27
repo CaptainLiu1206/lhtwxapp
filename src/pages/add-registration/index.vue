@@ -75,6 +75,23 @@ export default {
         return false
       }
 
+      const phoneReg = /^1[3456789]\d{9}$/
+      if (!phoneReg.test(phone)) {
+        wx.showToast({
+          icon: 'none',
+          title: '请填写正确的手机号'
+        })
+        return false
+      }
+      const emailReg = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/
+      if (!emailReg.test(email)) {
+        wx.showToast({
+          icon: 'none',
+          title: '请填写正确的邮箱'
+        })
+        return false
+      }
+
       this.setRegistration({
         realname,
         phone,

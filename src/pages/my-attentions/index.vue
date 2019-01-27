@@ -1,7 +1,7 @@
 <template>
-  <div class="container attention">
-    <div v-if="list.length" class="attention-list">
-      <attention-item v-for="attention in list" :key="attention.id" :attention="attention"></attention-item>
+  <div class="container sponsor">
+    <div v-if="list.length" class="sponsor-list">
+      <sponsor-card v-for="sponsor in list" :key="sponsor.id" :sponsor="sponsor"></sponsor-card>
     </div>
     <i-load-more class="no-data" tip="暂无关注主办方" :loading="false" v-if="!list.length" />
   </div>
@@ -9,11 +9,11 @@
 
 <script>
 import { mapActions } from 'vuex'
-import AttentionItem from 'components/attention-item'
+import SponsorCard from 'components/sponsor-card'
 
 export default {
   components: {
-    AttentionItem
+    SponsorCard
   },
   data () {
     return {
@@ -35,12 +35,12 @@ export default {
 </script>
 
 <style lang="scss">
-.attention {
+.sponsor {
   display: flex;
   flex-direction: column;
   justify-items: center;
   background-color: #f4f4f4;
-  .attention-list {
+  .sponsor-list {
     width: 100%;
     box-sizing: border-box;
     padding: 30rpx;

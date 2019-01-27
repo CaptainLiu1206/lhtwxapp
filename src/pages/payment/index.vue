@@ -47,7 +47,7 @@
         :button-text="buyBtnText"
         :tip="true"
         @submit="onPay">
-        <view slot="tip">温馨提示：支持报名多次报名且可以帮别人报名，您已经报名3次</view>
+        <view slot="tip">温馨提示：请您在购买之前，确认填写报名信息真实有效。</view>
       </van-submit-bar>
     </div>
   </div>
@@ -115,37 +115,45 @@ export default {
       let _this = this
       this.postPay(payload).then(({success, data, msg}) => {
         if (success) {
-          wx.requestPayment({
-            timeStamp: data.timeStamp,
-            nonceStr: data.nonceStr,
-            package: data.package,
-            signType: 'MD5',
-            paySign: data.paySign,
-            success (res) {
-              wx.showToast({
-                title: '支付成功'
+          if (payload.payment === 0) {
+            setTimeout(() => {
+              wx.navigateTo({
+                url: '../my-activities/main'
               })
-              _this.setRegistration({
-                realname: '',
-                phone: '',
-                email: '',
-                companyName: '',
-                position: '',
-                remark: ''
-              })
-              setTimeout(() => {
-                wx.navigateTo({
-                  url: '../my-activities/main'
+            }, 500)
+          } else {
+            wx.requestPayment({
+              timeStamp: data.timeStamp,
+              nonceStr: data.nonceStr,
+              package: data.package,
+              signType: 'MD5',
+              paySign: data.paySign,
+              success (res) {
+                wx.showToast({
+                  title: '支付成功'
                 })
-              }, 500)
-            },
-            fail (res) {
-              wx.showToast({
-                icon: 'none',
-                title: '支付失败'
-              })
-            }
-          })
+                _this.setRegistration({
+                  realname: '',
+                  phone: '',
+                  email: '',
+                  companyName: '',
+                  position: '',
+                  remark: ''
+                })
+                setTimeout(() => {
+                  wx.navigateTo({
+                    url: '../my-activities/main'
+                  })
+                }, 500)
+              },
+              fail (res) {
+                wx.showToast({
+                  icon: 'none',
+                  title: '支付失败'
+                })
+              }
+            })
+          }
         } else {
           wx.showToast({
             icon: 'none',

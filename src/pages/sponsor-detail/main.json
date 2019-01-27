@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "主办方",
+  "usingComponents": {
+    "van-icon": "../../static/vant/icon/index"
+  }
+}

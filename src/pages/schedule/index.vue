@@ -29,7 +29,7 @@
         <div class="category">
           <div>
             <i-tabs :current='currentTab' @change="handleTabChange" :scroll="true">
-              <i-tab v-for="(category, idx) in categories" :key="idx" :title="category.name"></i-tab>
+              <i-tab v-for="category in categories" :key="category.id" :title="category.name"></i-tab>
             </i-tabs>
           </div>
         </div>
@@ -182,6 +182,8 @@ export default {
           }
           .icon {
             float: right;
+            padding-top: 10rpx;
+            box-sizing: border-box;
             .van-icon {
               line-height: 70rpx;
             }

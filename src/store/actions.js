@@ -80,7 +80,7 @@ const actions = {
       fly.post('/index').then(res => {
         if (res.code === 200) {
           let {newest, selected, classify, banner, area} = res.data
-          commit('setCityListAndCategories', {cityList: area, categories: [{id: 0, name: '全部'}, ...classify]})
+          commit('setCityListAndCategories', {cityList: [{id: '', name: '全国'}, ...area], categories: [{id: 0, name: '全部', iconUrl: 'cagtegory0'}, ...classify]})
           const resp = {
             banners: banner,
             categories: classify.splice(0, 7),
@@ -129,7 +129,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       fly.get('/activity/getActivityDetail', {...params, unionid: state.user.unionid}).then(res => {
         if (res.code === 200) {
-          const { activityDetail, organization, iscollection, isconcenred, leavingmessage } = res.data
+          const { activityDetail, organization, iscollection, isconcenred, leavingmessage, isexpired } = res.data
 
           const active = {
             id: activityDetail.id,
@@ -140,7 +140,8 @@ const actions = {
             scale: activityDetail.buynum,
             time: `${handlerActivityDetailTime(activityDetail.startTime)} - ${handlerActivityDetailTime(activityDetail.endTime)}`,
             address: activityDetail.address,
-            iscollection
+            iscollection,
+            isexpired
           }
 
           const sponsor = {
@@ -167,6 +168,40 @@ const actions = {
         } else {
           errToast(res.msg || '获取我的活动详情失败')
           resolve({success: false, data: null})
+        }
+      }).catch(err => {
+        errToast(err.msg || '获取我的活动详情失败')
+        reject(err)
+      })
+    })
+  },
+  fetchSponsorDetail ({state, commit}, params) {
+    return new Promise((resolve, reject) => {
+      fly.get('/organization/getOrganizationInfo', {...params, unionid: state.user.unionid}).then(res => {
+        if (res.code === 200) {
+          const { info, isconcenred, orgList } = res.data
+          let list = orgList.reduce((arr, {id, title, headimg, cost, areaname, startTime, endTime}) => {
+            arr.push({
+              id,
+              title,
+              thumb: headimg,
+              price: cost,
+              address: areaname,
+              time: `${handlerActivityListTime(startTime)} - ${handlerActivityListTime(endTime)}`
+            })
+            return arr
+          }, [])
+          const sponsor = {
+            id: info.id,
+            companyName: info.companyName,
+            companyImgurl: info.companyImgurl,
+            companyAddress: info.companyAddress,
+            compayProfile: info.compayProfile,
+            isconcenred
+          }
+          resolve({success: true, data: {sponsor, list}})
+        } else {
+          resolve({success: false, msg: res.msg || '获取我的活动详情失败'})
         }
       }).catch(err => {
         errToast(err.msg || '获取我的活动详情失败')
@@ -203,7 +238,7 @@ const actions = {
       })
     })
   },
-  toggleAttention ({state}, payload) {
+  toggleSponsor ({state}, payload) {
     return new Promise((resolve, reject) => {
       fly.post('/user/saveUserConcenred', {...payload, unionid: state.user.unionid}).then(res => {
         if (res.code === 200) {

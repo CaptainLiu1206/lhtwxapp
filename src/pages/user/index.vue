@@ -103,6 +103,7 @@ export default {
       background-color: transparent;
       border-radius: 10rpx;
       background-size: cover;
+      overflow:hidden;
       .blur_bj {
         position: absolute;
         height: 100%;

@@ -7,7 +7,7 @@
     <div class="item-right">
       <div class="title ellipsis">{{item.title}}</div>
       <div class="price-sign" v-if="item.price || item.price === '0' || item.price === 0">
-        <span class="price" v-if="item.price">￥<span class="num">{{item.price}}</span></span>
+        <span class="price">￥<span class="num">{{item.price}}</span></span>
         <div class="btn-wrapper">
           <button class="sign-btn" hover-class="btn-hover" v-if="isButton">{{item.price > 0 ? '开始报名' : '免费报名'}}</button>
         </div>
@@ -65,14 +65,14 @@ export default {
       }
       .badge {
         position: absolute;
-        top: 10rpx;
-        right: 10rpx;
-        border-radius: 16rpx;
-        min-width: 40rpx;
+        top: 5px;
+        right: 5px;
+        border-radius: 8px;
+        min-width: 20px;
         color: #fff;
-        line-height: 32rpx;
-        padding: 4rpx 12rpx;
-        font-size: 24rpx;
+        line-height: 16px;
+        padding: 2px 6px;
+        font-size: 12px;
         white-space: nowrap;
         background: #f30;
         z-index: 10;
@@ -86,10 +86,10 @@ export default {
       overflow: hidden;
       .title {
         width: 100%;
-        height: 40rpx;
+        height: 18px;
         font-weight: bold;
-        font-size: 32rpx;
-        line-height: 40rpx;
+        font-size: 14px;
+        line-height: 18px;
         color: #333;
       }
       .price-sign {
@@ -97,16 +97,17 @@ export default {
         width: 100%;
         text-align: right;
         box-sizing: border-box;
-        padding-right: 20rpx;
+        padding-right: 10px;
         display: flex;
         align-items: flex-end;
         .price {
           flex: 1 0 0;
           text-align: left;
           color: red;
-          font-size: 22rpx;
+          font-size: 10px;
+          font-weight: normal;
           .num {
-            font-size: 28rpx;
+            font-size: 14px;
             font-weight: 600;
           }
         }
@@ -114,11 +115,11 @@ export default {
           flex: 1 0 0;
           text-align: right;
           .sign-btn {
-            line-height: 56rpx;
+            line-height: 28px;
             outline: none;
             border-radius: 6rpx;
             text-align: center;
-            font-size: 28rpx;
+            font-size: 12px;
             color:#ff976a;
             border: 2rpx solid #ff976a;
             background-color: #fff;
@@ -140,9 +141,9 @@ export default {
       .time,
       .address {
         width: 100%;
-        font-size: 24rpx;
-        line-height: 24rpx;
-        height: 24rpx;
+        font-size: 12px;
+        line-height: 12px;
+        height: 12px;
         color: #333;
       }
     }

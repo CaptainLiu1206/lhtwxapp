@@ -15,16 +15,18 @@
       <swiper>
         <block v-for="(banner, idx) in banners" :key="idx">
           <swiper-item>
-            <img class="banner-img" :src="banner.title" alt="" @click="onBannerClick(banner)">
+            <image class="banner-img" mode="aspectFill" :src="banner.title" alt="" @click="onBannerClick(banner)"></image>
           </swiper-item>
         </block>
       </swiper>
     </div>
     <div class="categories" v-if="categories.length">
       <div class="category" v-for="category in categories" :key="category.id" @click="toSchedule(category.id)">
-        <view class="icon-wrapper">
-          <text class="iconfont" :class="category.iconUrl"></text>
-        </view>
+        <div class="widget">
+          <view class="icon-wrapper">
+            <text class="iconfont" :class="category.iconUrl"></text>
+          </view>
+        </div>
         <p class="title">{{category.name}}</p>
       </div>
       <div class="category" @click="toSchedule(0)">
@@ -144,6 +146,7 @@ export default {
   .head {
     display: flex;
     overflow: hidden;
+    background-color: #f2f2f2;
     .address {
       width: auto;
       padding-left: 10px;
@@ -167,15 +170,14 @@ export default {
     .search-wrapper {
       flex: 1 0 0;
       .van-search {
-        background-color: #fff !important;
         .van-cell {
-          background-color: #f2f2f2;
+        background-color: #fff !important;
         }
       }
     }
   }
   .banner-wrapper {
-    height: 400rpx;
+    height: 300rpx;
     ._swiper {
       height: 100%;
       ._swiper-item {
@@ -185,7 +187,7 @@ export default {
     .banner-img {
       display: block;
       width: 100vw;
-      height: 400rpx;
+      height: 300rpx;
     }
   }
 
@@ -200,37 +202,37 @@ export default {
       & + .category {
         .icon-wrapper {
           color: rgb(226, 100, 104);
-          border: 4px solid rgb(226, 100, 104);
+          border-color: rgb(226, 100, 104);
         }
         & + .category {
           .icon-wrapper {
             color: rgb(246, 83, 184);
-            border: 4px solid rgb(246, 83, 184);
+            border-color: rgb(246, 83, 184);
           }
           & + .category {
             .icon-wrapper {
               color: rgb(107, 201, 213);
-              border: 4px solid rgb(107, 201, 213);
+              border-color: rgb(107, 201, 213);
             }
             & + .category {
               .icon-wrapper {
                 color: rgb(238, 132, 93);
-                border: 4px solid rgb(238, 132, 93);
+                border-color: rgb(238, 132, 93);
               }
               & + .category {
                 .icon-wrapper {
                   color: rgb(117, 77, 199);
-                  border: 4px solid rgb(117, 77, 199);
+                  border-color: rgb(117, 77, 199);
                 }
                 & + .category {
                   .icon-wrapper {
                     color: rgb(139, 210, 70);
-                    border: 4px solid rgb(139, 210, 70);
+                    border-color: rgb(139, 210, 70);
                   }
                   & + .category {
                     .icon-wrapper {
                       color: rgb(246, 175, 83);
-                      border: 4px solid rgb(246, 175, 83);
+                      border-color: rgb(246, 175, 83);
                     }
                   }
                 }
@@ -239,16 +241,23 @@ export default {
           }
         }
       }
-      .icon-wrapper {
+      .widget {
         width: 127rpx;
-        height: 127rpx;
+        height: 80rpx;
+        text-align: center;
+      }
+      .icon-wrapper {
+        display: inline-block;
+        text-align: center;
+        width: 80rpx;
+        height: 80rpx;
         color: rgb(96, 164, 237);
-        border: 4px solid rgb(96, 164, 237);
+        border: 2px solid rgb(96, 164, 237);
         box-sizing: border-box;
         border-radius: 50%;
         .iconfont {
-          font-size: 70rpx;
-          line-height: 110rpx;
+          font-size: 40rpx;
+          line-height: 70rpx;
         }
       }
       .title {
@@ -308,8 +317,8 @@ export default {
         }
         .desc {
           .title {
-            font-size: 16px;
-            line-height: 20px;
+            font-size: 14px;
+            line-height: 18px;
             color: #333;
             margin: 16rpx 0;
           }
