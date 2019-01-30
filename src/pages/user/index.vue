@@ -29,7 +29,7 @@
         <i-icon type="mobilephone_fill" slot="icon" size="20"></i-icon>
       </i-cell>
     </i-cell-group>
-    <swiper
+    <!-- <swiper
       class="swiper"
       :indicator-dots="indicatorDots"
       :autoplay="autoplay"
@@ -39,13 +39,13 @@
       <swiper-item v-for="banner in userBanners" v-bind:key="banner.id" @click="toWebView(banner)">
         <image :src="banner.headimg" class="slide-image" />
       </swiper-item>
-    </swiper>
+    </swiper> -->
     <Authorization :isShow="!isAuthorization" />
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import Authorization from 'components/Authorization'
 
 export default {
@@ -64,7 +64,7 @@ export default {
     avatarBoxStyle () {
       return `background: url(${this.userInfo.userimage}) no-repeat center;`
     },
-    ...mapGetters(['isAuthorization', 'userInfo', 'userBanners'])
+    ...mapGetters(['isAuthorization', 'userInfo'])
   },
   methods: {
     toUserInfoSet () {
@@ -76,13 +76,13 @@ export default {
       wx.navigateTo({
         url: `../webview/main?linkurl=${banner.linkUrl}`
       })
-    },
-    ...mapActions(['fetchUserBanners'])
+    }
+    // ...mapActions(['fetchUserBanners'])
   },
   onShow () {
-    if (!this.userBanners.length) {
-      this.fetchUserBanners()
-    }
+    // if (!this.userBanners.length) {
+    //   this.fetchUserBanners()
+    // }
   },
   created () {}
 }
@@ -154,16 +154,16 @@ export default {
       }
     }
   }
-  .swiper {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100vw;
-    height: 150rpx;
-    image {
-      width: 100vw;
-      height: 150rpx;
-    }
-  }
+  // .swiper {
+  //   position: absolute;
+  //   bottom: 0;
+  //   left: 0;
+  //   width: 100vw;
+  //   height: 150rpx;
+  //   image {
+  //     width: 100vw;
+  //     height: 150rpx;
+  //   }
+  // }
 }
 </style>

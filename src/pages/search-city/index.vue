@@ -2,8 +2,8 @@
   <div class="container search-city">
     <div class="current-city section">
       <p class="title">当前选择城市</p>
-      <button hover-class="hover-class" class="city current">
-        <van-icon class="icon" name="location" size="14px" />
+      <button hover-class="hover-class" class="city">
+        <text class="iconfont icon-didian01"></text>
         <span>{{currentCity.name}}</span>
       </button>
     </div>
@@ -84,8 +84,7 @@ export default {
         border: none;
       }
       .icon {
-        font-size: 22rpx;
-        padding-right: 2px;
+        padding: 2px 2px 0 0;
       }
       &.current {
         color: #ffffff;

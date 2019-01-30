@@ -33,9 +33,15 @@
         </div>
       </div>
       <div class="form-cell">
+        <label class="label">职位</label>
+        <div class="input-block">
+          <input type="text" v-model="userInfo.companyPosition" placeholder="请输入职位名称">
+        </div>
+      </div>
+      <div class="form-cell">
         <label class="label">地址</label>
         <div class="input-block">
-          <input type="text" v-model="userInfo.companyPosition" placeholder="请输入详细地址">
+          <input type="text" v-model="userInfo.address" placeholder="请输入详细地址">
         </div>
       </div>
     </div>
@@ -54,10 +60,11 @@ export default {
     return {
       userInfo: {
         realname: '',
-        gender: '',
+        gender: '男',
         phone: '',
         email: '',
         companyPosition: '',
+        address: '',
         companyName: ''
       },
       sexActionSheetVisible: false,
@@ -81,6 +88,23 @@ export default {
       this.handlerSexSelectCancel()
     },
     onSave () {
+      let isOK = true
+      Object.keys(this.userInfo).forEach(key => {
+        if (!this.userInfo[key]) {
+          isOK = false
+        } else {
+          if (!this.userInfo[key].trim()) {
+            isOK = false
+          }
+        }
+      })
+      if (!isOK) {
+        wx.showToast({
+          icon: 'none',
+          title: '请完善个人信息'
+        })
+        return false
+      }
       this.postUserInfo(this.userInfo).then(({success}) => {
         if (success) {
           wx.showToast({
@@ -98,8 +122,9 @@ export default {
   },
   onShow () {
     Object.keys(this.userInfo).forEach(key => {
-      this.userInfo[key] = this.user[key]
+      this.userInfo[key] = this.user[key] || ''
     })
+    this.userInfo.__keyPath && delete this.userInfo.__keyPath
   },
   created () {}
 }

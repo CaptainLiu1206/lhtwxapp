@@ -5,14 +5,21 @@
     </div>
     <div class="sponsor-right">
       <div class="top">
-        <div class="title ellipsis">{{sponsor.companyName}}</div>
+        <div class="title">
+          <view class="ellipsis">{{sponsor.companyName}}</view>
+          <view class="type" v-if="sponsor.type && sponsor.type.className">
+            <text class="iconfont icon-renzheng" :class="sponsor.type.className"></text>
+            <span>{{sponsor.type.sponsorType}}</span>
+          </view>
+        </div>
         <a class="btn" v-if="isBtn" @click.stop="onTogglesponsor">
-          <span class="btn-sponsor add-sponsor" v-if="!sponsor.isconcenred">+ 关注</span>
-          <span class="btn-sponsor cancel-sponsor" v-if="sponsor.isconcenred">取消关注</span>
+          <span class="btn-sponsor add-sponsor" v-if="!sponsor.uConcerned">关注</span>
+          <span class="btn-sponsor cancel-sponsor" v-if="sponsor.uConcerned">已关注</span>
         </a>
       </div>
-      <div class="desc">{{sponsor.compayProfile}}</div>
-      <div class="address ellipsis">{{sponsor.companyAddress}}</div>
+      
+      <div class="desc" v-if="sponsor.compayProfile">{{sponsor.compayProfile}}</div>
+      <div class="address ellipsis" v-if="sponsor.companyAddress">{{sponsor.companyAddress}}</div>
     </div>
   </div>
 </template>
@@ -25,7 +32,7 @@ export default {
     },
     isBtn: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   methods: {
@@ -43,7 +50,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .sponsor-item {
-  height: 200rpx;
+  min-height: 200rpx;
   display: flex;
   margin-bottom: 30rpx;
   padding: 20rpx 30rpx;
@@ -73,6 +80,8 @@ export default {
     overflow: hidden;
     .top {
       display: flex;
+      align-items: top;
+      justify-content: space-between;
       margin-bottom: 10rpx;
       width: 100%;
       height: 50rpx;
@@ -83,27 +92,41 @@ export default {
         flex: 1 0 0;
         font-size: 14px;
         color: #333;
+        font-weight: 600;
+        .type {
+          display: block;
+          font-size: 12px;
+          color: #666;
+          line-height: 16px;
+        }
       }
       .btn {
-        width: auto;
+        padding: 10rpx 0 0 10rpx;
+        width: 120rpx;
         text-align: right;
         .btn-sponsor {
           display: block;
+          width: 100%;
           font-size: 12px;
-          line-height: 26px;
-          padding: 0 10px;
-          border-radius: 2px;
+          line-height: 21px;
+          border-radius: 4px;
+          box-sizing: border-box;
+          text-align: center;
+          background-color: #ffffff;
+          color: rgb(139, 210, 70);
+          border: 1px solid rgb(139, 210, 70);
           &.add-sponsor {
-            background-color: #3B99FB;
-            color: #ffffff;
+            color: rgb(139, 210, 70);
+            border: 1px solid rgb(139, 210, 70);
           }
           &.cancel-sponsor {
-            background-color: #e8e8e8;
-            color: #333;
+            color: #3B99FB;
+            border: 1px solid #3B99FB;
           }
         }
       }
     }
+    
     .desc {
       width: 100%;
       font-size: 12px;
@@ -119,6 +142,7 @@ export default {
       -webkit-box-orient: vertical;
     }
     .address {
+      margin-top: 10rpx;
       width: 100%;
       font-size: 12px;
       line-height: 24rpx;

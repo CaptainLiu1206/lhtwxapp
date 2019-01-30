@@ -49,4 +49,22 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+.ellipsis-two {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  white-space: normal !important;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.color-gold {
+  color: rgb(234, 199, 135) !important;
+}
+.color-copper {
+  color: rgb(191, 173, 111) !important;
+}
+.color-silver {
+  color: rgb(233, 233, 216) !important;
+}
 </style>

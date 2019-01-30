@@ -2,8 +2,7 @@
   "navigationBarTitleText": "律汇通",
   "usingComponents": {
     "van-icon": "../../../static/vant/icon/index",
-    "i-load-more": "../../../static/iview/load-more/index",
-    "i-tabs": "../../../static/iview/tabs/index",
-    "i-tab": "../../../static/iview/tab/index"
+    "i-icon": "../../../static/iview/icon/index",
+    "i-load-more": "../../../static/iview/load-more/index"
   }
 }

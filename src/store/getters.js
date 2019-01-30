@@ -1,10 +1,15 @@
 const getters = {
-  registration (state) {
+  registrationInfo (state) {
     return state.registration
   },
+  registrations (state) {
+    return state.registrations
+  },
   userInfo (state) {
-    // console.log(state)
     return state.user
+  },
+  indexData (state) {
+    return state.indexData
   },
   isAuthorization (state) {
     return state.user.isAuthorization
@@ -18,8 +23,8 @@ const getters = {
   categories (state) {
     return state.categories
   },
-  currentCategoryId (state) {
-    return state.currentCategoryId
+  currentCategory (state) {
+    return state.currentCategory
   },
   isIphoneX (state) {
     return state.isIphoneX

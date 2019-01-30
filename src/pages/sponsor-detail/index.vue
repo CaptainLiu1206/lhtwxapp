@@ -1,23 +1,30 @@
 <template>
   <div class="container sponsor-detail">
-    <!-- <sponsor-card :isBtn="isBtn" :sponsor="sponsor" @btncb="onToggleSponsor"></sponsor-card> -->
     <div class="sponsor-info">
-      <div class="box">
-        <div class="thumb">
-          <div @click="onToggleSponsor">
-            <img class="avatar" :src="sponsor.companyImgurl" alt="thumb">
-            <div class="btn-wrapper">
-              <a class="btn">
-                <span class="btn-sponsor add-sponsor" v-if="!sponsor.isconcenred">+ 关注</span>
-                <span class="btn-sponsor cancel-sponsor" v-if="sponsor.isconcenred">取消关注</span>
-              </a>
+      <div class="widget">
+        <div class="box">
+          <div class="thumb">
+            <div @click="onToggleSponsor">
+              <img class="avatar" :src="sponsor.companyImgurl" alt="thumb">
+              <div class="btn-wrapper">
+                <a class="btn">
+                  <span class="btn-sponsor add-sponsor" v-if="!sponsor.uConcerned">关注</span>
+                  <span class="btn-sponsor cancel-sponsor" v-if="sponsor.uConcerned">已关注</span>
+                </a>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="meta">
-          <div class="name">{{sponsor.companyName}}</div>
-          <div class="desc">{{sponsor.compayProfile}}</div>
-          <div class="address">{{sponsor.companyAddress}}</div>
+          <div class="meta">
+            <div class="name" v-if="sponsor.companyName">
+              <div>{{sponsor.companyName}}</div>
+              <view class="type" v-if="sponsor.type && sponsor.type.className">
+                <text class="iconfont icon-renzheng" :class="sponsor.type.className"></text>
+                <span>{{sponsor.type.sponsorType}}</span>
+              </view>
+            </div>
+            <div class="desc" v-if="sponsor.compayProfile">{{sponsor.compayProfile}}</div>
+            <div class="address" v-if="sponsor.companyAddress">{{sponsor.companyAddress}}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -71,8 +78,8 @@ export default {
     onToggleSponsor () {
       this.toggleSponsor({organizationId: this.sponsor.id}).then((success, msg) => {
         if (success) {
-          this.sponsor.isconcenred = !this.sponsor.isconcenred
-          if (this.sponsor.isconcenred) {
+          this.sponsor.uConcerned = !this.sponsor.uConcerned
+          if (this.sponsor.uConcerned) {
             wx.showToast({
               title: '关注成功'
             })
@@ -84,7 +91,7 @@ export default {
           }
         } else {
           wx.showToast({
-            title: msg || this.sponsor.isconcenred ? '取消关注失败' : '关注失败',
+            title: msg || this.sponsor.uConcerned ? '取消关注失败' : '关注失败',
             icon: 'none'
           })
         }
@@ -102,9 +109,7 @@ export default {
     padding: 15px;
     box-sizing: border-box;
     text-align: center;
-    .box {
-      position: relative;
-      box-sizing: border-box;
+    .widget {
       width: 100%;
       height: 100%;
       background-color: #fff;
@@ -112,6 +117,10 @@ export default {
       background-size: cover;
       overflow: hidden;
       padding: 10px;
+      box-sizing: border-box;
+    }
+    .box {
+      position: relative;
       display: flex;
       .thumb {
         flex: 200rpx 0 0;
@@ -124,27 +133,6 @@ export default {
           border-radius: 50%;
           overflow: hidden;
         }
-        .btn-wrapper {
-          text-align: center;
-          .btn {
-            width: auto;
-            margin-top: 8px;
-            max-width: 160rpx;
-            text-align: center;
-            .btn-sponsor {
-              display: block;
-              font-size: 12px;
-              line-height: 12px;
-              &.add-sponsor {
-                color: #3B99FB;
-              }
-              &.cancel-sponsor {
-                color: #666;
-              }
-            }
-          }
-        }
-        
       }
       .meta {
         flex: 1 0 0;
@@ -157,6 +145,13 @@ export default {
           height: auto;
           font-size: 14px;
           color: #333;
+          .type {
+            margin-top: 10rpx;
+            display: block;
+            font-size: 12px;
+            color: #666;
+            line-height: 16px;
+          }
         }
         .desc,
         .address {
@@ -166,17 +161,42 @@ export default {
           margin-top: 20rpx;
           font-size: 12px;
           color: #666666;
-          text-align: l
+          text-align: left;
         }
         .desc {
           flex: 1 0 0;
         }
       }
     }
+    .btn-wrapper {
+      text-align: left;
+      margin-top: 5px;
+      .btn {
+        display: inline-block;
+        width: auto;
+        .btn-sponsor {
+          display: inline-block;
+          font-size: 12px;
+          line-height: 22px;
+          text-align: center;
+          min-width: 150rpx;
+          border: 1px solid rgb(139, 210, 70);
+          border-radius: 5px;
+          &.add-sponsor {
+            color: rgb(139, 210, 70);
+            border-color: rgb(139, 210, 70);
+          }
+          &.cancel-sponsor {
+            color: #3B99FB;
+            border-color: #3B99FB;
+          }
+        }
+      }
+    }
   }
   .activities-box{
     position: absolute;
-    top: 332rpx;
+    top: 370rpx;
     bottom: 0;
     left: 0;
     width: 100vw;

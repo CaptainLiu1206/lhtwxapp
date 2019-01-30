@@ -19,13 +19,13 @@
           <input type="text" v-model="registration.email" placeholder="请输入邮箱">
         </div>
       </div>
-      <div class="form-cell">
+      <div class="form-cell required">
         <label class="label">公司</label>
         <div class="input-block">
           <input type="text" v-model="registration.companyName" placeholder="请输入公司名称">
         </div>
       </div>
-      <div class="form-cell">
+      <div class="form-cell required">
         <label class="label">职位</label>
         <div class="input-block">
           <input type="text" v-model="registration.position" placeholder="请输入职位名称">
@@ -45,12 +45,13 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 
 export default {
   components: {},
   data () {
     return {
+      isEdit: false,
       registration: {
         realname: '',
         phone: '',
@@ -61,13 +62,18 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters(['registrations', 'registrationInfo'])
+  },
   methods: {
     onSave () {
       const registration = this.registration
       let realname = registration.realname.trim()
       let phone = registration.phone.trim()
       let email = registration.email.trim()
-      if (!realname || !phone || !email) {
+      let companyName = registration.companyName.trim()
+      let position = registration.position.trim()
+      if (!realname || !phone || !email || !companyName || !position) {
         wx.showToast({
           icon: 'none',
           title: '请完善报名信息'
@@ -92,22 +98,51 @@ export default {
         return false
       }
 
-      this.setRegistration({
+      let isExit = false
+      let _registrations = [...this.registrations]
+      this.registrations.forEach((item, idx) => {
+        if (item.realname === realname && item.phone === phone) {
+          if (this.isEdit) {
+            _registrations.splice(idx, 1)
+          } else {
+            isExit = true
+          }
+        }
+      })
+      if (isExit) {
+        wx.showToast({
+          icon: 'none',
+          title: '请勿重复报名'
+        })
+        return false
+      }
+      this.setRegistrations([{
         realname,
         phone,
         email,
-        companyName: registration.companyName.trim(),
-        position: registration.position.trim(),
-        remark: registration.remark.trim()
-      })
+        companyName: companyName,
+        position: position,
+        remark: this.registration.remark.trim()
+      }, ..._registrations])
       wx.navigateBack({
         delta: 1
       })
     },
-    ...mapMutations(['setRegistration'])
+    ...mapMutations(['setRegistration', 'setRegistrations'])
+  },
+  onUnload () {
+    this.setRegistration({
+      realname: '',
+      phone: '',
+      email: '',
+      companyName: '',
+      position: '',
+      remark: ''
+    })
   },
   onShow () {
-    this.registration = {...this.$store.state.registration}
+    this.isEdit = !!this.$mp.query.edit
+    this.registration = {remark: '', ...this.registrationInfo}
   },
   created () {
   }

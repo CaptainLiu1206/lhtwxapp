@@ -7,6 +7,7 @@ const state = {
     position: '',
     remark: ''
   },
+  registrations: [],
   user: {
     id: '',
     isAuthorization: true,
@@ -29,11 +30,19 @@ const state = {
   },
   userBanners: [],
   categories: [],
-  currentCategoryId: 0,
+  currentCategory: {},
   cityList: [],
   currentCityId: 0,
-  currentCityName: '全国',
-  isIphoneX: false
+  currentCityName: '全球',
+  isIphoneX: false,
+  indexData: {
+    sponsors: [],
+    banners: [],
+    advertisement: {},
+    categories: [],
+    newest: [],
+    activities: []
+  }
 }
 
 export default state

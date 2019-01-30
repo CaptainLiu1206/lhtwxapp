@@ -17,22 +17,58 @@ function handlerActivityDetailTime (time) {
 
 function handleIndexActivityList (list) {
   let _list = list.reduce((arr, item) => {
-    const { id, cost, headimg, startTime, title } = item
+    const { id, cost, headimg, startTime, title, areaname } = item
     let { year, month, day } = formatTime(startTime)
     arr.push({
       id: id,
       title,
       price: cost,
       imgUrl: headimg,
-      startTime: `${year}-${month}-${day}`
+      startTime: `${year}-${month}-${day}`,
+      areaname
     })
     return arr
   }, [])
   return _list
 }
 
+function randomColor () {
+  var r = Math.floor(Math.random() * 256)
+  var g = Math.floor(Math.random() * 256)
+  var b = Math.floor(Math.random() * 256)
+  return `rgb(${r}, ${g}, ${b})`
+}
+
+function categoryIconStyle () {
+  const _color = randomColor()
+  return `color: ${_color}; border-color: ${_color};`
+}
+
+function handleSponsorType (sponsor) {
+  let className = ''
+  let sponsorType = ''
+  switch (sponsor) {
+    case 1:
+      className = 'color-gold'
+      sponsorType = '高级认证企业'
+      break
+    case 3:
+      className = 'color-silver'
+      sponsorType = '中级认证企业'
+      break
+    case 4:
+      className = 'color-gold'
+      sponsorType = '初级认证企业'
+      break
+    default:
+      className = ''
+      sponsorType = ''
+  }
+  return { className, sponsorType }
+}
+
 const actions = {
-  login ({commit}) {
+  login ({commit, dispatch}) {
     wx.login({
       success (res) {
         if (res.code) {
@@ -44,6 +80,7 @@ const actions = {
               } else {
                 commit('setUser', {session_key, openid, isLogin: true, isAuthorization: false})
               }
+              dispatch('fetchIndexInfo')
             } else {
               errToast(resp.msg || '登录失败')
             }
@@ -58,12 +95,13 @@ const actions = {
       }
     })
   },
-  updLoginInfo ({commit}, payload) {
+  updLoginInfo ({commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
       fly.post('/updUserInfo', payload).then(res => {
         if (res.code === 200) {
           const { user } = res.data
           commit('setUser', {...user, isAuthorization: true})
+          dispatch('fetchIndexInfo')
           resolve(true)
         } else {
           commit('setUser', {isAuthorization: false})
@@ -75,19 +113,56 @@ const actions = {
       })
     })
   },
-  fetchIndexInfo ({commit, dispatch}) {
+  fetchIndexInfo ({commit, dispatch, state}) {
     return new Promise((resolve, reject) => {
-      fly.post('/index').then(res => {
+      fly.get('/index', {unionid: state.user.unionid}).then(res => {
         if (res.code === 200) {
-          let {newest, selected, classify, banner, area} = res.data
-          commit('setCityListAndCategories', {cityList: [{id: '', name: '全国'}, ...area], categories: [{id: 0, name: '全部', iconUrl: 'cagtegory0'}, ...classify]})
+          let {newest, selected, classify, banner, area, org, advertisement} = res.data
+          let categories = classify.reduce((arr, item) => {
+            arr.push({
+              id: item.id,
+              name: item.name,
+              iconUrl: item.iconUrl,
+              style: categoryIconStyle()
+            })
+            return arr
+          }, [])
+          let resCategories = categories.slice(0, 7)
+          resCategories.push({id: -1, name: '更多行业', iconUrl: 'icon-qita', style: categoryIconStyle()})
+          let sponsors = org.reduce((arr, item) => {
+            arr.push({
+              id: item.id,
+              companyName: item.companyName,
+              companyImgurl: item.companyImgurl,
+              compayProfile: item.compayProfile,
+              type: handleSponsorType(item.type),
+              uConcerned: item.uConcerned
+            })
+            return arr
+          }, [])
+          let resAdvertisement = {
+            id: advertisement[0].id,
+            headimg: advertisement[0].headimg,
+            linkUrl: advertisement[0].linkUrl,
+            urltype: advertisement[0].type
+          }
           const resp = {
+            sponsors,
             banners: banner,
-            categories: classify.splice(0, 7),
+            advertisement: resAdvertisement,
+            categories: resCategories,
             newest: handleIndexActivityList(newest.list),
             activities: handleIndexActivityList(selected.list)
           }
-          dispatch('fetchUserBanners')
+          categories.unshift({
+            id: 0,
+            name: '全部',
+            iconUrl: 'icon-quanbu',
+            style: categoryIconStyle()
+          })
+
+          commit('setCityListAndCategories', {cityList: [{id: 0, name: '全球'}, ...area], categories, indexData: resp})
+          // dispatch('fetchUserBanners')
           resolve(resp)
         } else {
           errToast(res.msg || '获取首页信息失败')
@@ -129,7 +204,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       fly.get('/activity/getActivityDetail', {...params, unionid: state.user.unionid}).then(res => {
         if (res.code === 200) {
-          const { activityDetail, organization, iscollection, isconcenred, leavingmessage, isexpired } = res.data
+          const { activityDetail, organization, iscollection, leavingmessage, isexpired } = res.data
 
           const active = {
             id: activityDetail.id,
@@ -141,7 +216,8 @@ const actions = {
             time: `${handlerActivityDetailTime(activityDetail.startTime)} - ${handlerActivityDetailTime(activityDetail.endTime)}`,
             address: activityDetail.address,
             iscollection,
-            isexpired
+            isexpired,
+            attachment: activityDetail.attachment
           }
 
           const sponsor = {
@@ -150,7 +226,8 @@ const actions = {
             companyImgurl: organization.companyImgurl,
             companyAddress: organization.companyAddress,
             compayProfile: organization.compayProfile,
-            isconcenred
+            type: handleSponsorType(organization.type),
+            uConcerned: organization.uConcerned
           }
 
           const leavingmessages = []
@@ -179,7 +256,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       fly.get('/organization/getOrganizationInfo', {...params, unionid: state.user.unionid}).then(res => {
         if (res.code === 200) {
-          const { info, isconcenred, orgList } = res.data
+          const { info, orgList } = res.data
           let list = orgList.reduce((arr, {id, title, headimg, cost, areaname, startTime, endTime}) => {
             arr.push({
               id,
@@ -197,7 +274,8 @@ const actions = {
             companyImgurl: info.companyImgurl,
             companyAddress: info.companyAddress,
             compayProfile: info.compayProfile,
-            isconcenred
+            type: handleSponsorType(info.type),
+            uConcerned: info.uConcerned
           }
           resolve({success: true, data: {sponsor, list}})
         } else {
@@ -301,7 +379,12 @@ const actions = {
     return new Promise((resolve, reject) => {
       fly.get('/user/getUserConcenred', {unionid: state.user.unionid}).then(res => {
         if (res.code === 200) {
-          resolve({success: true, list: res.data})
+          let sponsors = res.data.reduce((arr, sponsor) => {
+            sponsor.uConcerned = true
+            arr.push(sponsor)
+            return arr
+          }, [])
+          resolve({success: true, list: sponsors})
         } else {
           errToast(res.msg || '获取我的关注列表失败')
           resolve({success: false})
@@ -336,6 +419,31 @@ const actions = {
       })
     })
   },
+  fetchSponors ({commit, state}, payload) {
+    return new Promise((resolve, reject) => {
+      fly.get('/organization/getOrganizationList', {...payload, unionid: state.user.unionid}).then(res => {
+        if (res.code === 200) {
+          let sponsors = res.data.list.reduce((arr, item) => {
+            arr.push({
+              id: item.id,
+              companyName: item.companyName,
+              companyImgurl: item.companyImgurl,
+              compayProfile: item.compayProfile,
+              type: handleSponsorType(item.type),
+              uConcerned: item.uConcerned
+            })
+            return arr
+          }, [])
+          resolve({success: true, list: sponsors})
+        } else {
+          resolve({success: false, list: [], msg: res.msg || '获取主办方列表失败'})
+        }
+      }).catch(err => {
+        errToast(err.msg || '获取主办方列表失败')
+        reject(err)
+      })
+    })
+  },
   postPay ({state}, payload) {
     return new Promise((resolve, reject) => {
       let url = payload.payment === 0 ? '/order/payFree' : '/order/unifiedOrder'
@@ -350,17 +458,17 @@ const actions = {
         reject(err)
       })
     })
-  },
-  fetchUserBanners ({commit}) {
-    return new Promise((resolve, reject) => {
-      fly.get('/advertisement/activityList').then(res => {
-        if (res.code === 200) {
-          commit('setUserBanners', res.data)
-          resolve({success: true, list: res.data})
-        }
-      })
-    })
   }
+  // fetchUserBanners ({commit}) {
+  //   return new Promise((resolve, reject) => {
+  //     fly.get('/advertisement/activityList').then(res => {
+  //       if (res.code === 200) {
+  //         commit('setUserBanners', res.data)
+  //         resolve({success: true, list: res.data})
+  //       }
+  //     })
+  //   })
+  // }
 }
 
 export default actions

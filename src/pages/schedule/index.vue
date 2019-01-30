@@ -20,17 +20,18 @@
         <div class="right" @click="onNext">后一天</div>
       </div>
       <div class="address-category">
-        <div class="address">
-          <button hover-class="hover-class" @click="toSeachCity">
-            <van-icon class="icon" name="location" size="14px" />
+        <div class="address" @click="toSeachCity">
+          <span>地区：</span>
+          <div class="wrapper">
+            <text class="iconfont icon-didian01"></text>
             <span class="name">{{currentCity.name}}</span>
-          </button>
+          </div>
         </div>
-        <div class="category">
-          <div>
-            <i-tabs :current='currentTab' @change="handleTabChange" :scroll="true">
-              <i-tab v-for="category in categories" :key="category.id" :title="category.name"></i-tab>
-            </i-tabs>
+        <div class="category" @click="toSelectCategory">
+          <span>行业类型：</span>
+          <div class="wrapper">
+            <text class="iconfont" :class="currentCategory.iconUrl"></text>
+            <span class="name">{{currentCategory.name}}</span>
           </div>
         </div>
       </div>
@@ -62,11 +63,9 @@ export default {
   },
   data () {
     return {
-      currentTab: 0,
       isButton: true,
       date: '',
       day: '',
-      categoryId: '',
       list: [],
       pageInfo: {
         total: 0,
@@ -77,14 +76,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['currentCity', 'isAuthorization', 'categories', 'currentCategoryId'])
+    ...mapGetters(['currentCity', 'isAuthorization', 'categories', 'currentCategory'])
   },
   onShow () {
     const now = new Date()
     const {year, month, day} = formatTime(now)
     this.date = `${year}-${month}-${day}`
     this.day = getUperDay(now.getDay())
-    this.currentTab = this.currentCategoryId
     this.onFetchActivities()
   },
   methods: {
@@ -94,9 +92,8 @@ export default {
         pageNum: this.pageInfo.pageNum
       }
       this.currentCity.id && (payload.cityId = this.currentCity.id)
-      this.currentTab && (payload.categoryId = this.currentTab)
+      this.currentCategory && this.currentCategory.id && (payload.categoryId = this.currentCategory.id)
       this.date && (payload.time = new Date(this.date))
-
       this.fetchActivities(payload).then(({success, data}) => {
         if (success) {
           this.list = data.list
@@ -107,6 +104,11 @@ export default {
     toSeachCity () {
       wx.navigateTo({
         url: '../search-city/main'
+      })
+    },
+    toSelectCategory () {
+      wx.navigateTo({
+        url: '../categories/main'
       })
     },
     onPrev () {
@@ -182,7 +184,6 @@ export default {
           }
           .icon {
             float: right;
-            padding-top: 10rpx;
             box-sizing: border-box;
             .van-icon {
               line-height: 70rpx;
@@ -198,49 +199,38 @@ export default {
       }
     }
     .address-category {
-      display: flex;
       background-color: #fff;
-      .address {
-        flex: 177rpx 0 0;
-        text-align: center;
-        padding: 10rpx 0 0 10rpx;
-        box-sizing: border-box;
-        button {
+      overflow: hidden;
+      .address,
+      .category {
+        float: left;
+        margin:10rpx 0 10rpx 30rpx;
+        font-size: 12px;
+        color: #333;
+        line-height: 24px;
+        .wrapper {
+          margin-left: 5px;
           display: inline-block;
-          padding: 0;
           text-align: center;
-          overflow: hidden;
-          width: 157rpx;
-          border-radius: 10rpx;
-          line-height: 60rpx;
-          font-size: 28rpx;
-          text-align: center;
-          border: 2rpx solid #3B99FB;
           box-sizing: border-box;
-          outline: none;
-          background-color: #fff;
-          &::after {
-            border: none;
-          }
-          .icon {
-            padding-right: 2px;
-          }
-          &.hover-class {
-            background-color: rgba(0, 0, 0, 0.1);
+          border: 2rpx solid #3B99FB;
+          border-radius: 10rpx;
+          padding: 0 20rpx;
+          .iconfont {
+            font-size: 12px;
+            margin-right:4px;
           }
         }
       }
       .category {
-        flex: 1 0 0;
-        box-sizing: border-box;
-        margin: 0 10rpx;
-        overflow: hidden;
+        float: right;
+        margin-right: 30rpx;
       }
     }
   }
   .activities-box{
     position: absolute;
-    top: 236rpx;
+    top: 200rpx;
     bottom: 0;
     left: 0;
     width: 100vw;

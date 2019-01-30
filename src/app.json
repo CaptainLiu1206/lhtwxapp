@@ -1,6 +1,9 @@
 {
   "pages": [
     "pages/index/main",
+    "pages/categories/main",
+    "pages/wxparse-widget/main",
+    "pages/sponsors/main",
     "pages/sponsor-detail/main",
     "pages/search-active/main",
     "pages/schedule/main",

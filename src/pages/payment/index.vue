@@ -12,33 +12,15 @@
         </div>
       </div>
       <div class="cell-wrapper" @click="toAddRegistration">
-        <van-cell title="报名信息" :value="isAdd ? '请填写报名信息' : '修改报名信息'" is-link />
+        <van-cell title="报名信息" value="添加报名信息" is-link />
       </div>
-      <div class="registration-info" v-if="!isAdd">
-        <div class="item">
-          <label class="label">姓名：</label>
-          <span class="text">{{registration.realname}}</span>
-        </div>
-        <div class="item">
-          <label class="label">手机号：</label>
-          <span class="text">{{registration.phone}}</span>
-        </div>
-        <div class="item">
-          <label class="label">邮箱：</label>
-          <span class="text">{{registration.email}}</span>
-        </div>
-        <div class="item">
-          <label class="label">公司名称：</label>
-          <span class="text">{{registration.companyName}}</span>
-        </div>
-        <div class="item">
-          <label class="label">职位：</label>
-          <span class="text">{{registration.position}}</span>
-        </div>
-        <div class="item">
-          <label class="label">备注：</label>
-          <span class="text">{{registration.remark}}</span>
-        </div>
+      <div class="registration-info">
+        <van-swipe-cell :right-width="65" v-for="item in registrations" :key="item.realname" @click="editRegistration(item)">
+          <van-cell-group>
+            <van-cell :title="item.realname + '  ' + item.phone" />
+          </van-cell-group>
+          <view slot="right" class="label" @click.stop="delRegistration(item)">删除</view>
+        </van-swipe-cell>
       </div>
     </div>
     <div :class="buyWrapperClass">
@@ -63,10 +45,10 @@ export default {
     }
   },
   computed: {
-    isAdd () {
-      const { realname, phone, email } = this.registration
-      return realname && phone && email ? 0 : 1
-    },
+    // isAdd () {
+    //   const { realname, phone, email } = this.registration
+    //   return realname && phone && email ? 0 : 1
+    // },
     buyWrapperClass () {
       if (this.isIphoneX) {
         return 'buy-wrapper higher'
@@ -77,7 +59,7 @@ export default {
     buyBtnText () {
       return this.active.price ? '立即支付' : '免费领取'
     },
-    ...mapGetters(['registration', 'isIphoneX'])
+    ...mapGetters(['registrationInfo', 'registrations', 'isIphoneX'])
   },
   components: {},
   onShow () {
@@ -90,27 +72,45 @@ export default {
     wx.removeStorageSync('active')
   },
   methods: {
+    delRegistration (registration) {
+      let self = this
+      wx.showModal({
+        title: '提示',
+        content: '确认删除该报名信息？',
+        success (res) {
+          if (res.confirm) {
+            self.registrations.forEach((item, idx) => {
+              if (item.realname === registration.realname && item.phone === registration.phone) {
+                let registrations = [...self.registrations]
+                self.setRegistrations([...registrations.splice(idx, 1)])
+              }
+            })
+          }
+        }
+      })
+    },
+    editRegistration (registration) {
+      this.setRegistration(registration)
+      wx.navigateTo({
+        url: '../add-registration/main?edit=1'
+      })
+    },
     onPay () {
       const {id, price} = this.active
-      const {realname, companyName, phone, email, position, remark} = this.registration
-      if (!realname || !phone || !email) {
+      // const {realname, companyName, phone, email, position, remark} = this.registration
+      if (!this.registrations || !this.registrations.length) {
         wx.showToast({
           icon: 'none',
-          title: '请完善报名信息'
+          title: '请添加报名信息'
         })
         return false
       }
       const payload = {
-        payment: price,
+        payment: price * this.registrations.length,
         goodsId: id,
-        goodsCount: 1,
+        goodsCount: this.registrations.length,
         goodsPrice: price,
-        realname,
-        companyName,
-        phone,
-        email,
-        position,
-        remark
+        userList: this.registrations
       }
       let _this = this
       this.postPay(payload).then(({success, data, msg}) => {
@@ -132,14 +132,7 @@ export default {
                 wx.showToast({
                   title: '支付成功'
                 })
-                _this.setRegistration({
-                  realname: '',
-                  phone: '',
-                  email: '',
-                  companyName: '',
-                  position: '',
-                  remark: ''
-                })
+                _this.setRegistrations([])
                 setTimeout(() => {
                   wx.navigateTo({
                     url: '../my-activities/main'
@@ -168,7 +161,7 @@ export default {
       })
     },
     ...mapActions(['postPay']),
-    ...mapMutations(['setRegistration'])
+    ...mapMutations(['setRegistration', 'setRegistrations'])
   }
 }
 </script>
@@ -217,24 +210,32 @@ export default {
     }
     .registration-info {
       background-color: #fff;
-      padding: 30rpx;
-      .item {
-        display: flex;
-        font-size: 28rpx;
-        color: #666;
-        line-height: 40rpx;
-        margin-bottom: 20rpx;
-        &:last-child {
-          margin-bottom: 0;
-        }
-        .label {
-          flex: 150rpx 0 0;
-          text-align: right;
-        }
-        .text {
-          flex: 1 0 0;
-        }
+      .label {
+        line-height: 44px;
+        font-size: 14px;
+        width: 65px;
+        text-align: center;
+        color: #fff;
+        background-color: rgb(255, 68, 68);
       }
+      // padding: 30rpx;
+      // .item {
+      //   display: flex;
+      //   font-size: 28rpx;
+      //   color: #666;
+      //   line-height: 40rpx;
+      //   margin-bottom: 20rpx;
+      //   &:last-child {
+      //     margin-bottom: 0;
+      //   }
+      //   .label {
+      //     flex: 150rpx 0 0;
+      //     text-align: right;
+      //   }
+      //   .text {
+      //     flex: 1 0 0;
+      //   }
+      // }
     }
   }
   .buy-wrapper {

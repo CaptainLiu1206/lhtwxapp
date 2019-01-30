@@ -2,6 +2,8 @@
   "navigationBarTitleText": "确认订单",
   "usingComponents": {
     "van-cell": "../../../static/vant/cell/index",
+    "van-swipe-cell": "../../../static/vant/swipe-cell/index",
+    "van-cell-group": "../../../static/vant/cell-group/index",
     "van-submit-bar": "../../../static/vant/submit-bar/index"
   }
 }
